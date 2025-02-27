@@ -81,7 +81,7 @@ public:
 	inline T operator()(usize y, usize x) const
 	{
 		return mData[(y * mWidth) + x];
-	}
+	} 
 
 };
 
