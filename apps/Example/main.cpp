@@ -1,9 +1,11 @@
-#include "Tensor.hpp"
+#include "Matrix.hpp"
 
 #include <iostream>
 
+using namespace isp;
+
 int main()
 {
-	std::cout << Tensor().Thing() << std::endl;
+	Matrix<int> matrix(2, 2);
 	return 0;
 }
