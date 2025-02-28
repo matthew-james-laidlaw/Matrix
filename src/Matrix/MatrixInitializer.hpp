@@ -14,19 +14,32 @@ template <typename T>
 std::tuple<usize, usize> Shape(MatrixInitializer<T> const& initializer)
 {
     usize height = initializer.size();
-    Expect(height > 0);
+    Expect(height > 0, "error: empty initializer list");
 
-    usize width = initializer.begin()->size() > 0;
-    Expect(width > 0);
+    usize width = initializer.begin()->size();
+    Expect(width > 0, "error: empty initializer list");
     
-    for (auto row : initializer)
+    for (auto& row : initializer)
     {
-        Expect(row->size() > 0);
+        Expect(row.size() == width, "error: inconsistent matrix initializer list shape");
     }
+
+    return { height, width };
 }
 
 template <typename T>
 std::unique_ptr<T[]> Flatten(MatrixInitializer<T> const& initializer)
 {
-    ...
+    auto [height, width] = Shape(initializer);
+    auto size = height * width;
+    auto data = std::make_unique<T[]>(size);
+
+    T* current = data.get();
+    for (auto row : initializer)
+    {
+        std::copy(row.begin(), row.end(), current);
+        current += width;
+    }
+
+    return data;
 }

@@ -1,10 +1,11 @@
 #pragma once
 
+#include "MatrixInitializer.hpp"
+
 #include <Number.hpp>
 #include <Expect.hpp>
 
 #include <array>
-#include <initializer_list>
 #include <memory>
 #include <stdexcept>
 
@@ -39,7 +40,7 @@ public:
 		std::fill(mData.get(), mData.get() + mSize, initializer);
 	}
 
-	Matrix(std::initializer_list<T> const& initializer)
+	Matrix(MatrixInitializer<T> const& initializer)
 	{
 		std::tie(mHeight, mWidth) = Shape(initializer);
         mSize = mHeight * mWidth;
@@ -53,19 +54,54 @@ public:
 	}
 
 	Matrix(Matrix&& other)
-		: Matrix(other.mHeight, other.mWidth)
+		: mHeight(other.mHeight)
+		, mWidth(other.mWidth)
+		, mSize(other.mSize)
+		, mData(std::move(other.mData))
 	{
-		mData = std::move(other.mData);
+		other.mHeight = 0;
+		other.mWidth = 0;
+		other.mSize = 0;
 	}
 
 	Matrix& operator=(Matrix const& other)
 	{
-		throw std::runtime_error("not implemented");
+		if (this == &other)
+		{
+			return *this;
+		}
+
+		if (mSize != other.mSize)
+		{
+			mSize = other.mSize;
+			mData.reset(new T[mSize]);
+		}
+	
+		mHeight = other.mHeight;
+		mWidth = other.mWidth;
+	
+		std::copy(other.mData.get(), other.mData.get() + mSize, mData.get());
+
+		return *this;
 	}
 
 	Matrix& operator=(Matrix&& other)
 	{
-		throw std::runtime_error("not implemented");
+		if (this == &other)
+		{
+			return *this;
+		}
+
+		mHeight = other.mHeight;
+		mWidth = other.mWidth;
+		mSize = other.mSize;
+		mData = std::move(other.mData);
+	
+		other.mHeight = 0;
+		other.mWidth = 0;
+		other.mSize = 0;
+	
+		return *this;
 	}
 
 	~Matrix() = default;
@@ -78,6 +114,16 @@ public:
 	usize Width() const
 	{
 		return mWidth;
+	}
+
+	usize Size() const
+	{
+		return mSize;
+	}
+
+	const T* Data() const
+	{
+		return mData.get();
 	}
 
 	inline T& operator()(usize y, usize x)
