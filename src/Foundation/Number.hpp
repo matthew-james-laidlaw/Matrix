@@ -2,9 +2,6 @@
 
 #include <cstdint>
 #include <concepts>
-#include <memory>
-#include <array>
-#include <vector>
 
 using i8  = std::int8_t;
 using i16 = std::int16_t;

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../Foundation.hpp"
+#include <Number.hpp>
+#include <Expect.hpp>
 
 #include <array>
 #include <initializer_list>
@@ -26,37 +27,43 @@ public:
 	Matrix() = delete;
 
 	Matrix(usize height, usize width)
-	{
-		throw std::runtime_error("not implemented");
-	}
+		: mHeight(height)
+		, mWidth(width)
+		, mSize(mHeight * mWidth)
+		, mData(new T[mSize])
+	{}
 
 	Matrix(usize height, usize width, T initializer)
 		: Matrix(height, width)
 	{
-		throw std::runtime_error("not implemented");
+		std::fill(mData.get(), mData.get() + mSize, initializer);
 	}
 
 	Matrix(std::initializer_list<T> const& initializer)
 	{
-		throw std::runtime_error("not implemented");
+		std::tie(mHeight, mWidth) = Shape(initializer);
+        mSize = mHeight * mWidth;
+        mData = Flatten(initializer);
 	}
 
-	Matrix(Matrix const&)
+	Matrix(Matrix const& other)
+		: Matrix(other.mHeight, other.mWidth)
+	{
+		std::copy(other.mData.get(), other.mData.get() + mSize, mData.get());
+	}
+
+	Matrix(Matrix&& other)
+		: Matrix(other.mHeight, other.mWidth)
+	{
+		mData = std::move(other.mData);
+	}
+
+	Matrix& operator=(Matrix const& other)
 	{
 		throw std::runtime_error("not implemented");
 	}
 
-	Matrix(Matrix&&)
-	{
-		throw std::runtime_error("not implemented");
-	}
-
-	Matrix& operator=(Matrix const&)
-	{
-		throw std::runtime_error("not implemented");
-	}
-
-	Matrix& operator=(Matrix&&)
+	Matrix& operator=(Matrix&& other)
 	{
 		throw std::runtime_error("not implemented");
 	}
