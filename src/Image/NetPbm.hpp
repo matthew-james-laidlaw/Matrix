@@ -7,12 +7,6 @@
 #include <fstream>
 #include <vector>
 
-bool DimensionsEqual(Matrix<u8> const& red, Matrix<u8> const& green, Matrix<u8> const& blue)
-{
-    return red.Height() == green.Height() && red.Height() == blue.Height()
-        && red.Width()  == green.Width()  && red.Width()  == blue.Width();
-}
-
 auto Interleave(Matrix<u8> const& red, Matrix<u8> const& green, Matrix<u8> const& blue) -> std::vector<u8>
 {
     Expect(DimensionsEqual(red, green, blue));

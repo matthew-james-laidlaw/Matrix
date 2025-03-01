@@ -8,10 +8,21 @@ int main()
 {
 	try
 	{
-		Matrix<int> matrix = {1, 2};
-		std::cout << matrix.Height() << std::endl;
-		std::cout << matrix.Width() << std::endl;
-		std::cout << matrix.Size() << std::endl;
+		Matrix<int> m1 = {
+			{ 1, 2 },
+			{ 3, 4 },
+		};
+
+		Matrix<int> m2 = {
+			{ 4, 3 },
+			{ 2, 1 },
+		};
+
+		auto m3 = m1 + m2;
+
+		std::cout << m1 << std::endl;
+		std::cout << m2 << std::endl;
+		std::cout << m3 << std::endl;
 	}
 	catch (std::exception const& e)
 	{

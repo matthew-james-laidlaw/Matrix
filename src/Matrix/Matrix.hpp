@@ -6,6 +6,8 @@
 #include <Expect.hpp>
 
 #include <array>
+#include <functional>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
@@ -135,6 +137,82 @@ public:
 	{
 		return mData[(y * mWidth) + x];
 	} 
+
+	friend bool DimensionsEqual(Matrix const& left, Matrix const& right)
+	{
+		return left.Height() == right.Height() && left.Width() == right.Width();
+	}
+
+	template <typename Operation>
+	friend Matrix ElementwiseOperation(Matrix const& left, Matrix const& right)
+	{
+		usize height = left.Height();
+		usize width = left.Width();
+
+		Matrix result(height, width);
+		Operation operation;
+
+		for (usize y = 0; y < height; ++y)
+		{
+			for (usize x = 0; x < width; ++x)
+			{
+				result(y, x) = operation(left(y, x), right(y, x));
+			}
+		}
+
+		return result;
+	}
+
+	friend bool operator==(Matrix const& left, Matrix const& right)
+	{
+		Expect(DimensionsEqual(left, right));
+	}
+
+	friend Matrix operator+(Matrix const& left, Matrix const& right)
+	{
+		Expect(DimensionsEqual(left, right));
+		return ElementwiseOperation<std::plus<T>>(left, right);
+	}
+
+	friend Matrix operator-(Matrix const& left, Matrix const& right)
+	{
+		Expect(DimensionsEqual(left, right));
+		return ElementwiseOperation<std::minus<T>>(left, right);
+	}
+
+	friend Matrix operator*(Matrix const& left, Matrix const& right)
+	{
+		Expect(DimensionsEqual(left, right));
+		return ElementwiseOperation<std::multiplies<T>>(left, right);
+	}
+
+	friend Matrix operator/(Matrix const& left, Matrix const& right)
+	{
+		Expect(DimensionsEqual(left, right));
+		return ElementwiseOperation<std::divides<T>>(left, right);
+	}
+
+	friend std::ostream& operator<<(std::ostream& out, Matrix const& matrix)
+	{
+		for (usize y = 0; y < matrix.Height(); ++y)
+		{
+			out << "[ ";
+			for (usize x = 0; x < matrix.Width(); ++x)
+			{
+				out << matrix(y, x);
+				if (x != matrix.Width() - 1)
+				{
+					out << ", ";
+				}
+			}
+			out << " ]";
+			if (y != matrix.Height() - 1)
+			{
+				out << std::endl;
+			}
+		}
+		return out;
+	}
 
 };
 
