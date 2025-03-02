@@ -1,4 +1,5 @@
 #include "Matrix.hpp"
+#include "Dispatcher.hpp"
 
 #include <iostream>
 
@@ -18,7 +19,12 @@ int main()
 			{ 2, 1 },
 		};
 
-		auto m3 = m1 + m2;
+		Matrix<int> m3(2, 2);
+
+		DispatchBlocks(2, 2, [&](usize y, usize x)
+		{
+			m3(y, x) = m1(y, x) + m2(y, x);
+		});
 
 		std::cout << m1 << std::endl;
 		std::cout << m2 << std::endl;
