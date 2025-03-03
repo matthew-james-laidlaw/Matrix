@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Dispatcher.hpp"
 #include "MatrixInitializer.hpp"
 
 #include <Number.hpp>
@@ -14,10 +15,25 @@
 namespace isp
 {
 
-template <Number T>
+enum class ThreadingPolicy
+{
+	Sequential,
+	Threaded,
+};
+
+enum class ArithmeticPolicy
+{
+	Naive,
+	Fused,
+};
+
+template <Number T, ThreadingPolicy P1 = ThreadingPolicy::Sequential, ArithmeticPolicy P2 = ArithmeticPolicy::Naive>
 class Matrix
 {
 private:
+
+	static constexpr ThreadingPolicy threading_policy_ = P1;
+	static constexpr ArithmeticPolicy arithmetic_policy_ = P2;
 
 	usize mHeight;
 	usize mWidth;
@@ -144,7 +160,7 @@ public:
 	}
 
 	template <typename Operation>
-	friend Matrix ElementwiseOperation(Matrix const& left, Matrix const& right)
+	friend Matrix ElementwiseOperationSequential(Matrix const& left, Matrix const& right)
 	{
 		usize height = left.Height();
 		usize width = left.Width();
@@ -161,6 +177,40 @@ public:
 		}
 
 		return result;
+	}
+
+	template <typename Operation>
+	friend Matrix ElementwiseOperationThreaded(Matrix const& left, Matrix const& right)
+	{
+		usize height = left.Height();
+		usize width = left.Width();
+
+		Matrix result(height, width);
+		Operation operation;
+
+		DispatchBlocks(height, width, [&](size_t y, size_t x)
+		{
+			result(y, x) = operation(left(y, x), right(y, x));
+		});
+
+		return result;
+	}
+
+	template <typename Operation>
+	friend Matrix ElementwiseOperation(Matrix const& left, Matrix const& right)
+	{
+		if constexpr (threading_policy_ == ThreadingPolicy::Sequential)
+		{
+			return ElementwiseOperationSequential<Operation>(left, right);
+		}
+		else if constexpr (threading_policy_ == ThreadingPolicy::Threaded)
+		{
+			return ElementwiseOperationThreaded<Operation>(left, right);
+		}
+		else
+		{
+			static_assert(false, "error: invalid threading policy");
+		}
 	}
 
 	friend bool operator==(Matrix const& left, Matrix const& right)
