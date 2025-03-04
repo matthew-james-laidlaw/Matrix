@@ -1,5 +1,5 @@
 {
-    "version": 6,
+    "version": 8,
     "cmakeMinimumRequired": {
         "major": 3,
         "minor": 29,
@@ -12,9 +12,34 @@
             "binaryDir": "${sourceDir}/build/${presetName}"
         },
         {
-            "name": "windows",
-            "generator": "Visual Studio 17 2022",
-            "inherits": "base"
+            "name": "x64-apple",
+            "inherits": "base",
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "arm64-apple",
+            "inherits": "base",
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "x64-linux",
+            "inherits": "base",
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "arm64-linux",
+            "inherits": "base",
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "x64-windows",
+            "inherits": "base",
+            "generator": "Visual Studio 17 2022"
+        },
+        {
+            "name": "arm64-windows",
+            "inherits": "base",
+            "generator": "Visual Studio 17 2022"
         }
     ],
     "buildPresets": [
@@ -24,43 +49,259 @@
             "jobs": 8
         },
         {
-            "name": "windows-debug",
-            "configurePreset": "windows",
-            "configuration": "Debug",
-            "inherits": "base"
+            "name": "x64-apple-debug",
+            "inherits": "base",
+            "configurePreset": "x64-apple",
+            "configuration": "Debug"
         },
         {
-            "name": "windows-release",
-            "configurePreset": "windows",
-            "configuration": "Release",
-            "inherits": "base"
+            "name": "x64-apple-release",
+            "inherits": "base",
+            "configurePreset": "x64-apple",
+            "configuration": "Release"
+        },
+        {
+            "name": "arm64-apple-debug",
+            "inherits": "base",
+            "configurePreset": "arm64-apple",
+            "configuration": "Debug"
+        },
+        {
+            "name": "arm64-apple-release",
+            "inherits": "base",
+            "configurePreset": "arm64-apple",
+            "configuration": "Release"
+        },
+        {
+            "name": "x64-linux-debug",
+            "inherits": "base",
+            "configurePreset": "x64-linux",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-linux-release",
+            "inherits": "base",
+            "configurePreset": "x64-linux",
+            "configuration": "Release"
+        },
+        {
+            "name": "arm64-linux-debug",
+            "inherits": "base",
+            "configurePreset": "arm64-linux",
+            "configuration": "Debug"
+        },
+        {
+            "name": "arm64-linux-release",
+            "inherits": "base",
+            "configurePreset": "arm64-linux",
+            "configuration": "Release"
+        },
+        {
+            "name": "x64-windows-debug",
+            "inherits": "base",
+            "configurePreset": "x64-windows",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-windows-release",
+            "inherits": "base",
+            "configurePreset": "x64-windows",
+            "configuration": "Release"
+        },
+        {
+            "name": "arm64-windows-debug",
+            "inherits": "base",
+            "configurePreset": "arm64-windows",
+            "configuration": "Debug"
+        },
+        {
+            "name": "arm64-windows-release",
+            "inherits": "base",
+            "configurePreset": "arm64-windows",
+            "configuration": "Release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true,
+                "verbosity": "extra"
+            }
+        },
+        {
+            "name": "x64-apple-debug",
+            "inherits": "base",
+            "configurePreset": "x64-apple",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-apple-release",
+            "inherits": "base",
+            "configurePreset": "x64-apple",
+            "configuration": "Release"
+        },
+        {
+            "name": "arm64-apple-debug",
+            "inherits": "base",
+            "configurePreset": "arm64-apple",
+            "configuration": "Debug"
+        },
+        {
+            "name": "arm64-apple-release",
+            "inherits": "base",
+            "configurePreset": "arm64-apple",
+            "configuration": "Release"
+        },
+        {
+            "name": "x64-linux-debug",
+            "inherits": "base",
+            "configurePreset": "x64-linux",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-linux-release",
+            "inherits": "base",
+            "configurePreset": "x64-linux",
+            "configuration": "Release"
+        },
+        {
+            "name": "arm64-linux-debug",
+            "inherits": "base",
+            "configurePreset": "arm64-linux",
+            "configuration": "Debug"
+        },
+        {
+            "name": "arm64-linux-release",
+            "inherits": "base",
+            "configurePreset": "arm64-linux",
+            "configuration": "Release"
+        },
+        {
+            "name": "x64-windows-debug",
+            "inherits": "base",
+            "configurePreset": "x64-windows",
+            "configuration": "Debug"
+        },
+        {
+            "name": "x64-windows-release",
+            "inherits": "base",
+            "configurePreset": "x64-windows",
+            "configuration": "Release"
+        },
+        {
+            "name": "arm64-windows-debug",
+            "inherits": "base",
+            "configurePreset": "arm64-windows",
+            "configuration": "Debug"
+        },
+        {
+            "name": "arm64-windows-release",
+            "inherits": "base",
+            "configurePreset": "arm64-windows",
+            "configuration": "Release"
         }
     ],
     "workflowPresets": [
         {
-            "name": "windows-debug",
+            "name": "x64-apple-debug",
             "steps": [
-                {
-                    "type": "configure",
-                    "name": "windows"
-                },
-                {
-                    "type": "build",
-                    "name": "windows-debug"
-                }
+                { "type": "configure", "name": "x64-apple" },
+                { "type": "build", "name": "x64-apple-debug" },
+                { "type": "test", "name": "x64-apple-debug" }
             ]
         },
         {
-            "name": "windows-release",
+            "name": "x64-apple-release",
             "steps": [
-                {
-                    "type": "configure",
-                    "name": "windows"
-                },
-                {
-                    "type": "build",
-                    "name": "windows-release"
-                }
+                { "type": "configure", "name": "x64-apple" },
+                { "type": "build", "name": "x64-apple-release" },
+                { "type": "test", "name": "x64-apple-release" }
+            ]
+        },
+        {
+            "name": "arm64-apple-debug",
+            "steps": [
+                { "type": "configure", "name": "arm64-apple" },
+                { "type": "build", "name": "arm64-apple-debug" },
+                { "type": "test", "name": "arm64-apple-debug" }
+            ]
+        },
+        {
+            "name": "arm64-apple-release",
+            "steps": [
+                { "type": "configure", "name": "arm64-apple" },
+                { "type": "build", "name": "arm64-apple-release" },
+                { "type": "test", "name": "arm64-apple-release" }
+            ]
+        },
+        {
+            "name": "x64-linux-debug",
+            "steps": [
+                { "type": "configure", "name": "x64-linux" },
+                { "type": "build", "name": "x64-linux-debug" },
+                { "type": "test", "name": "x64-linux-debug" }
+            ]
+        },
+        {
+            "name": "x64-linux-release",
+            "steps": [
+                { "type": "configure", "name": "x64-linux" },
+                { "type": "build", "name": "x64-linux-release" },
+                { "type": "test", "name": "x64-linux-release" }
+            ]
+        },
+        {
+            "name": "arm64-linux-debug",
+            "steps": [
+                { "type": "configure", "name": "arm64-linux" },
+                { "type": "build", "name": "arm64-linux-debug" },
+                { "type": "test", "name": "arm64-linux-debug" }
+            ]
+        },
+        {
+            "name": "arm64-linux-release",
+            "steps": [
+                { "type": "configure", "name": "arm64-linux" },
+                { "type": "build", "name": "arm64-linux-release" },
+                { "type": "test", "name": "arm64-linux-release" }
+            ]
+        },
+        {
+            "name": "x64-windows-debug",
+            "steps": [
+                { "type": "configure", "name": "x64-windows" },
+                { "type": "build", "name": "x64-windows-debug" },
+                { "type": "test", "name": "x64-windows-debug" }
+            ]
+        },
+        {
+            "name": "x64-windows-release",
+            "steps": [
+                { "type": "configure", "name": "x64-windows" },
+                { "type": "build", "name": "x64-windows-release" },
+                { "type": "test", "name": "x64-windows-release" }
+            ]
+        },
+        {
+            "name": "arm64-windows-debug",
+            "steps": [
+                { "type": "configure", "name": "arm64-windows" },
+                { "type": "build", "name": "arm64-windows-debug" },
+                { "type": "test", "name": "arm64-windows-debug" }
+            ]
+        },
+        {
+            "name": "arm64-windows-release",
+            "steps": [
+                { "type": "configure", "name": "arm64-windows" },
+                { "type": "build", "name": "arm64-windows-release" },
+                { "type": "test", "name": "arm64-windows-release" }
             ]
         }
     ]

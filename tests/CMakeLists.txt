@@ -1,7 +1,2 @@
-if (${PROJECT_NAME}_BENCHMARKS)
-    add_subdirectory(benchmark)
-endif()
-
-if (${PROJECT_NAME}_TESTS)
-    add_subdirectory(unit)
-endif()
+add_subdirectory(benchmark)
+add_subdirectory(unit)

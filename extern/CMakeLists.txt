@@ -1,9 +1,6 @@
 add_subdirectory(argparse)
 
-if (${PROJECT_NAME}_TESTS)
-    add_subdirectory(googletest)
-endif()
+add_subdirectory(googletest)
 
-if (${PROJECT_NAME}_BENCHMARKS)
-    add_subdirectory(benchmark)
-endif()
+set(BENCHMARK_ENABLE_TESTING OFF)
+add_subdirectory(benchmark)
