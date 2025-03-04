@@ -6,8 +6,8 @@
 template <typename Callable>
 auto DispatchBlocks(size_t height, size_t width, Callable&& callable) -> void
 {
-    size_t block_height = 512;
-    size_t block_width = 512;
+    size_t block_height = 256;
+    size_t block_width = 256;
 
     size_t num_blocks_y = (height + block_height - 1) / block_height;
     size_t num_blocks_x = (width  + block_width  - 1) / block_width;
