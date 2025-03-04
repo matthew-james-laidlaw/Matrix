@@ -29,6 +29,7 @@ jobs:
                     echo "PLATFORM=linux" >> $GITHUB_ENV
                 else
                     echo "PLATFORM=windows" >> $GITHUB_ENV
+                fi
 
             - name: Configure
               run: |
