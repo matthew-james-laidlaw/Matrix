@@ -21,7 +21,7 @@ void generateColoredMandelbrot(Matrix<uint8_t> &red,
     const double imagMin = -1.0, imagMax = 1.0;
 
     // Gamma correction
-    const double gamma = 0.5L;
+    const double gamma = 0.5;
 
     DispatchBlocks(height, width, [&](size_t y, size_t x)
                    {
@@ -45,11 +45,11 @@ void generateColoredMandelbrot(Matrix<uint8_t> &red,
             double absz = std::abs(z);
             if (absz == 0.0) absz = 1e-10;
         
-            double mu = iteration - std::logl(std::logl(absz)) / std::logl(2.0);
+            double mu = iteration - std::log(std::log(absz)) / std::log(2.0);
             double t = mu / (double)maxIterations;
         
             // Apply gamma, clamp
-            t = std::powl(t, gamma);
+            t = std::pow(t, gamma);
             t = std::clamp(t, 0.0, 1.0);
         
             // Lookup final color from chosen colormap

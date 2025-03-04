@@ -209,7 +209,7 @@ public:
 
 	friend bool operator==(Matrix const& left, Matrix const& right)
 	{
-		Expect(DimensionsEqual(left, right));
+		return DimensionsEqual(left, right);
 	}
 
 	friend Matrix operator+(Matrix const& left, Matrix const& right)
