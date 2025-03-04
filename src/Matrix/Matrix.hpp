@@ -12,9 +12,6 @@
 #include <memory>
 #include <stdexcept>
 
-namespace isp
-{
-
 enum class ThreadingPolicy
 {
 	Sequential,
@@ -27,17 +24,17 @@ enum class ArithmeticPolicy
 	Fused,
 };
 
-template <Number T, ThreadingPolicy P1 = ThreadingPolicy::Sequential, ArithmeticPolicy P2 = ArithmeticPolicy::Naive>
+template <Number T>
 class Matrix
 {
 private:
 
-	static constexpr ThreadingPolicy threading_policy_ = P1;
-	static constexpr ArithmeticPolicy arithmetic_policy_ = P2;
+	static constexpr ThreadingPolicy threading_policy_ = ThreadingPolicy::Threaded;
+	static constexpr ArithmeticPolicy arithmetic_policy_ = ArithmeticPolicy::Naive;
 
-	usize mHeight;
-	usize mWidth;
-	usize mSize;
+	size_t height_;
+	size_t width_;
+	size_t size_;
 
 	std::unique_ptr<T[]> mData;
 
@@ -45,41 +42,41 @@ public:
 
 	Matrix() = delete;
 
-	Matrix(usize height, usize width)
-		: mHeight(height)
-		, mWidth(width)
-		, mSize(mHeight * mWidth)
-		, mData(new T[mSize])
+	Matrix(size_t height, size_t width)
+		: height_(height)
+		, width_(width)
+		, size_(height_ * width_)
+		, mData(new T[size_])
 	{}
 
-	Matrix(usize height, usize width, T initializer)
+	Matrix(size_t height, size_t width, T initializer)
 		: Matrix(height, width)
 	{
-		std::fill(mData.get(), mData.get() + mSize, initializer);
+		std::fill(mData.get(), mData.get() + size_, initializer);
 	}
 
 	Matrix(MatrixInitializer<T> const& initializer)
 	{
-		std::tie(mHeight, mWidth) = Shape(initializer);
-        mSize = mHeight * mWidth;
+		std::tie(height_, width_) = Shape(initializer);
+        size_ = height_ * width_;
         mData = Flatten(initializer);
 	}
 
 	Matrix(Matrix const& other)
-		: Matrix(other.mHeight, other.mWidth)
+		: Matrix(other.height_, other.width_)
 	{
-		std::copy(other.mData.get(), other.mData.get() + mSize, mData.get());
+		std::copy(other.mData.get(), other.mData.get() + size_, mData.get());
 	}
 
 	Matrix(Matrix&& other)
-		: mHeight(other.mHeight)
-		, mWidth(other.mWidth)
-		, mSize(other.mSize)
+		: height_(other.height_)
+		, width_(other.width_)
+		, size_(other.size_)
 		, mData(std::move(other.mData))
 	{
-		other.mHeight = 0;
-		other.mWidth = 0;
-		other.mSize = 0;
+		other.height_ = 0;
+		other.width_ = 0;
+		other.size_ = 0;
 	}
 
 	Matrix& operator=(Matrix const& other)
@@ -89,16 +86,16 @@ public:
 			return *this;
 		}
 
-		if (mSize != other.mSize)
+		if (size_ != other.size_)
 		{
-			mSize = other.mSize;
-			mData.reset(new T[mSize]);
+			size_ = other.size_;
+			mData.reset(new T[size_]);
 		}
 	
-		mHeight = other.mHeight;
-		mWidth = other.mWidth;
+		height_ = other.height_;
+		width_ = other.width_;
 	
-		std::copy(other.mData.get(), other.mData.get() + mSize, mData.get());
+		std::copy(other.mData.get(), other.mData.get() + size_, mData.get());
 
 		return *this;
 	}
@@ -110,33 +107,33 @@ public:
 			return *this;
 		}
 
-		mHeight = other.mHeight;
-		mWidth = other.mWidth;
-		mSize = other.mSize;
+		height_ = other.height_;
+		width_ = other.width_;
+		size_ = other.size_;
 		mData = std::move(other.mData);
 	
-		other.mHeight = 0;
-		other.mWidth = 0;
-		other.mSize = 0;
+		other.height_ = 0;
+		other.width_ = 0;
+		other.size_ = 0;
 	
 		return *this;
 	}
 
 	~Matrix() = default;
 
-	usize Height() const
+	size_t Height() const
 	{
-		return mHeight;
+		return height_;
 	}
 
-	usize Width() const
+	size_t Width() const
 	{
-		return mWidth;
+		return width_;
 	}
 
-	usize Size() const
+	size_t Size() const
 	{
-		return mSize;
+		return size_;
 	}
 
 	const T* Data() const
@@ -144,33 +141,34 @@ public:
 		return mData.get();
 	}
 
-	inline T& operator()(usize y, usize x)
+	inline T& operator()(size_t y, size_t x)
 	{
-		return mData[(y * mWidth) + x];
+		return mData[(y * width_) + x];
 	}
 
-	inline T operator()(usize y, usize x) const
+	inline T operator()(size_t y, size_t x) const
 	{
-		return mData[(y * mWidth) + x];
+		return mData[(y * width_) + x];
 	} 
 
-	friend bool DimensionsEqual(Matrix const& left, Matrix const& right)
+	template <typename... Matrices>
+	friend bool DimensionsEqual(Matrix const& first, Matrices... rest)
 	{
-		return left.Height() == right.Height() && left.Width() == right.Width();
+		return ((first.Height() == rest.Height() && first.Width() == rest.Width()) && ...);
 	}
 
 	template <typename Operation>
 	friend Matrix ElementwiseOperationSequential(Matrix const& left, Matrix const& right)
 	{
-		usize height = left.Height();
-		usize width = left.Width();
+		size_t height = left.Height();
+		size_t width = left.Width();
 
 		Matrix result(height, width);
 		Operation operation;
 
-		for (usize y = 0; y < height; ++y)
+		for (size_t y = 0; y < height; ++y)
 		{
-			for (usize x = 0; x < width; ++x)
+			for (size_t x = 0; x < width; ++x)
 			{
 				result(y, x) = operation(left(y, x), right(y, x));
 			}
@@ -182,8 +180,8 @@ public:
 	template <typename Operation>
 	friend Matrix ElementwiseOperationThreaded(Matrix const& left, Matrix const& right)
 	{
-		usize height = left.Height();
-		usize width = left.Width();
+		size_t height = left.Height();
+		size_t width = left.Width();
 
 		Matrix result(height, width);
 		Operation operation;
@@ -244,10 +242,10 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& out, Matrix const& matrix)
 	{
-		for (usize y = 0; y < matrix.Height(); ++y)
+		for (size_t y = 0; y < matrix.Height(); ++y)
 		{
 			out << "[ ";
-			for (usize x = 0; x < matrix.Width(); ++x)
+			for (size_t x = 0; x < matrix.Width(); ++x)
 			{
 				out << matrix(y, x);
 				if (x != matrix.Width() - 1)
@@ -265,5 +263,3 @@ public:
 	}
 
 };
-
-}

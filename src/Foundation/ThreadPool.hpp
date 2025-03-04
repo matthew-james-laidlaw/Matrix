@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Number.hpp"
-
 #include <algorithm>
 #include <thread>
 #include <vector>
@@ -23,9 +21,9 @@ private:
 
 public:
 
-    ThreadPool(usize thread_count = std::max(std::thread::hardware_concurrency(), 1u))
+    ThreadPool(size_t thread_count = std::max(std::thread::hardware_concurrency(), 1u))
     {
-        for (usize i = 0; i < thread_count; ++i)
+        for (size_t i = 0; i < thread_count; ++i)
         {
             threads_.emplace_back([this](std::stop_token stoken)
             {

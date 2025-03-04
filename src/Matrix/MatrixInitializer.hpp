@@ -11,12 +11,12 @@ template <typename T>
 using MatrixInitializer = std::initializer_list<std::initializer_list<T>>;
 
 template <typename T>
-std::tuple<usize, usize> Shape(MatrixInitializer<T> const& initializer)
+std::tuple<size_t, size_t> Shape(MatrixInitializer<T> const& initializer)
 {
-    usize height = initializer.size();
+    size_t height = initializer.size();
     Expect(height > 0, "error: empty initializer list");
 
-    usize width = initializer.begin()->size();
+    size_t width = initializer.begin()->size();
     Expect(width > 0, "error: empty initializer list");
     
     for (auto& row : initializer)

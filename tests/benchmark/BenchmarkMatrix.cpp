@@ -9,7 +9,7 @@ static void BM_SequentialAddition(benchmark::State& state)
     const usize cols = state.range(1);
 
     // Define a sequential matrix (using Naive arithmetic).
-    using MatrixSequential = isp::Matrix<double, isp::ThreadingPolicy::Sequential, isp::ArithmeticPolicy::Naive>;
+    using MatrixSequential = Matrix<double, ThreadingPolicy::Sequential, ArithmeticPolicy::Naive>;
     MatrixSequential A(rows, cols, 1.0);
     MatrixSequential B(rows, cols, 2.0);
 
@@ -30,7 +30,7 @@ static void BM_ThreadedAddition(benchmark::State& state)
     const usize cols = state.range(1);
 
     // Define a threaded matrix (using Naive arithmetic).
-    using MatrixThreaded = isp::Matrix<double, isp::ThreadingPolicy::Threaded, isp::ArithmeticPolicy::Naive>;
+    using MatrixThreaded = Matrix<double, ThreadingPolicy::Threaded, ArithmeticPolicy::Naive>;
     MatrixThreaded A(rows, cols, 1.0);
     MatrixThreaded B(rows, cols, 2.0);
 

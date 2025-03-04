@@ -7,58 +7,43 @@
 #include <fstream>
 #include <vector>
 
-auto Interleave(Matrix<u8> const& red, Matrix<u8> const& green, Matrix<u8> const& blue) -> std::vector<u8>
+auto Interleave(Matrix<uint8_t> const& red, Matrix<uint8_t> const& green, Matrix<uint8_t> const& blue) -> std::vector<uint8_t>
 {
     Expect(DimensionsEqual(red, green, blue));
 
-    usize height = red.Height();
-    usize width = red.Width();
+    size_t height = red.Height();
+    size_t width = red.Width();
 
-    usize pixel_stride = 3;
-    usize row_stride = width * pixel_stride;
+    size_t pixel_stride = 3;
+    size_t row_stride = width * pixel_stride;
 
-    usize size = height * row_stride;
+    size_t size = height * row_stride;
     
-    std::vector<u8> interleaved(size);
+    std::vector<uint8_t> interleaved(size);
     
-    for (usize y = 0; y < height; y++)
+    for (size_t y = 0; y < height; y++)
     {
-        for (usize x = 0; x < width; x++)
+        for (size_t x = 0; x < width; x++)
         {
-            usize plane_index = (y * width) + x;
-            usize interleaved_index = (y * row_stride) + (x * pixel_stride);
-            interleaved[interleaved_index + 0] = red[plane_index];
-            interleaved[interleaved_index + 1] = green[plane_index];
-            interleaved[interleaved_index + 2] = blue[plane_index];
+            size_t interleaved_index = (y * row_stride) + (x * pixel_stride);
+            interleaved[interleaved_index + 0] = red(y, x);
+            interleaved[interleaved_index + 1] = green(y, x);
+            interleaved[interleaved_index + 2] = blue(y, x);
         }
     }
     
     return interleaved;
 }
 
-auto EncodePgm(Matrix<u8> const& gray, const std::string &filename) -> void
-{
-    std::ofstream outfile(filename, std::ios::binary);
-    Expect(outfile);
-    
-    outfile << "P5" << std::endl;
-    outfile << gray.Width() << " " << gray.Height() << std::endl;
-    outfile << "255" << std::endl;
-    
-    outfile.write(reinterpret_cast<const char*>(gray.Data()), gray.Size() * sizeof(u8));
-
-    outfile.close();
-}
-
-auto EncodePpm(Matrix<u8> const& red, Matrix<u8> const& green, Matrix<u8> const& blue, const std::string &filename) -> void
+auto EncodePpm(const std::string &filename, Matrix<uint8_t> const& red, Matrix<uint8_t> const& green, Matrix<uint8_t> const& blue) -> void
 {
     Expect(DimensionsEqual(red, green, blue));
 
-    usize height = red.Height();
-    usize width = red.Width();
+    size_t height = red.Height();
+    size_t width = red.Width();
 
     std::ofstream outfile(filename, std::ios::binary);
-    Expect(outfile);
+    Expect(static_cast<bool>(outfile));
 
     outfile << "P6" << std::endl;
     outfile << width << " " << height << std::endl;
@@ -66,7 +51,7 @@ auto EncodePpm(Matrix<u8> const& red, Matrix<u8> const& green, Matrix<u8> const&
 
     auto interleaved = Interleave(red, green, blue);
 
-    outfile.write(reinterpret_cast<const char*>(interleaved.data()), interleaved.size() * sizeof(u8));
+    outfile.write(reinterpret_cast<const char*>(interleaved.data()), interleaved.size() * sizeof(uint8_t));
     
     outfile.close();
 }
