@@ -20,11 +20,6 @@ jobs:
             - name: Checkout source
               uses: actions/checkout@v3
 
-            - name: Setup CMake
-              uses: actions/setup-cmake@v3
-              with:
-                  cmake-version: '3.29.3'
-
             - name: Set PLATFORM variable
               run: |
                 if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
