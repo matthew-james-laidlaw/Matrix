@@ -201,13 +201,9 @@ public:
 		{
 			return ElementwiseOperationSequential<Operation>(left, right);
 		}
-		else if constexpr (threading_policy_ == ThreadingPolicy::Threaded)
-		{
-			return ElementwiseOperationThreaded<Operation>(left, right);
-		}
 		else
 		{
-			static_assert(false, "error: invalid threading policy");
+			return ElementwiseOperationThreaded<Operation>(left, right);
 		}
 	}
 
