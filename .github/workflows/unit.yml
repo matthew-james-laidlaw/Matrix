@@ -32,13 +32,16 @@ jobs:
                 fi
 
             - name: Configure
+              shell: bash
               run: |
                 cmake --preset "${{ matrix.arch }}-${PLATFORM}"
 
             - name: Build
+              shell: bash
               run: |
                 cmake --build --preset "${{ matrix.arch }}-${PLATFORM}-${{ matrix.config }}"
 
             - name: Test
+              shell: bash
               run: |
                 ctest --preset "${{ matrix.arch }}-${PLATFORM}-${{ matrix.config }}"
