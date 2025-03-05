@@ -17,7 +17,7 @@ Tensor<uint8_t, 3> generateColoredMandelbrot(size_t width, size_t height, Colorm
     const double imagMin = -1.0, imagMax = 1.0;
 
     // Gamma correction
-    const double gamma = 0.5;
+    const double gamma = 1.0;
 
     DispatchBlocks(height, width, [&](size_t y, size_t x)
     {
