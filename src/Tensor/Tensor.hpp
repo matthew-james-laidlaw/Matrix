@@ -4,7 +4,6 @@
 // #include "TensorInitializer.hpp"
 
 #include <Number.hpp>
-#include <Expect.hpp>
 
 #include <array>
 #include <functional>
@@ -136,25 +135,21 @@ public:
 
     friend Tensor operator+(Tensor const &left, Tensor const &right)
     {
-        Expect(left.shape_ == right.shape_);
         return ElementwiseOperation<std::plus<T>>(left, right);
     }
 
     friend Tensor operator-(Tensor const &left, Tensor const &right)
     {
-        Expect(left.shape_ == right.shape_);
         return ElementwiseOperation<std::minus<T>>(left, right);
     }
 
     friend Tensor operator*(Tensor const &left, Tensor const &right)
     {
-        Expect(left.shape_ == right.shape_);
         return ElementwiseOperation<std::multiplies<T>>(left, right);
     }
 
     friend Tensor operator/(Tensor const &left, Tensor const &right)
     {
-        Expect(left.shape_ == right.shape_);
         return ElementwiseOperation<std::divides<T>>(left, right);
     }
 };
