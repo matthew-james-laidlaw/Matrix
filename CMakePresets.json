@@ -5,7 +5,7 @@
         "minor": 29,
         "patch": 3
     },
-    "include": [ "CMakeBasePresets.json" ],
+    "include": [ "cmake/presets/CMakeBasePresets.json" ],
     "configurePresets": [
         { "name": "arm64-apple",   "inherits": "apple-base"   },
         { "name": "arm64-linux",   "inherits": "linux-base"   },

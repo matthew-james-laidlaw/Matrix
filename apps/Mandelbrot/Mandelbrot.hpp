@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Matrix.hpp>
+#include <Tensor.hpp>
 #include <NetPbm.hpp>
 #include <Dispatcher.hpp>
 
@@ -8,14 +8,10 @@
 
 #include <complex>
 
-void generateColoredMandelbrot(Matrix<uint8_t> &red,
-                               Matrix<uint8_t> &green,
-                               Matrix<uint8_t> &blue,
-                               size_t width,
-                               size_t height,
-                               Colormap colormapChoice,
-                               size_t maxIterations = 1000)
+Tensor<uint8_t, 3> generateColoredMandelbrot(size_t width, size_t height, Colormap colormapChoice, size_t maxIterations = 1000)
 {
+    Tensor<uint8_t, 3> rgb(height, width, 3);
+
     // Region of the complex plane
     const double realMin = -2.5, realMax = 1.0;
     const double imagMin = -1.0, imagMax = 1.0;
@@ -24,7 +20,7 @@ void generateColoredMandelbrot(Matrix<uint8_t> &red,
     const double gamma = 0.5;
 
     DispatchBlocks(height, width, [&](size_t y, size_t x)
-                   {
+    {
         // Map pixel (x,y) to the complex plane
         double real = realMin + (static_cast<double>(x) / (width - 1)) * (realMax - realMin);
         double imag = imagMin + (static_cast<double>(y) / (height - 1)) * (imagMax - imagMin);
@@ -63,7 +59,10 @@ void generateColoredMandelbrot(Matrix<uint8_t> &red,
         }
 
         // Convert [0..1] -> [0..255]
-        red(y, x)   = static_cast<unsigned char>(std::clamp(col.r * 255.0, 0.0, 255.0));
-        green(y, x) = static_cast<unsigned char>(std::clamp(col.g * 255.0, 0.0, 255.0));
-        blue(y, x)  = static_cast<unsigned char>(std::clamp(col.b * 255.0, 0.0, 255.0)); });
+        rgb({y, x, 0}) = static_cast<unsigned char>(std::clamp(col.r * 255.0, 0.0, 255.0));
+        rgb({y, x, 1}) = static_cast<unsigned char>(std::clamp(col.g * 255.0, 0.0, 255.0));
+        rgb({y, x, 2}) = static_cast<unsigned char>(std::clamp(col.b * 255.0, 0.0, 255.0));
+    });
+
+    return rgb;
 }

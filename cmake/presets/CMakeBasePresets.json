@@ -7,14 +7,12 @@
     },
     "configurePresets": [
         { "name": "base", "hidden": true, "binaryDir": "${sourceDir}/build/${presetName}" },
-
         { "name": "apple-base",   "hidden": true, "inherits": "base", "generator": "Xcode"                 },
         { "name": "linux-base",   "hidden": true, "inherits": "base", "generator": "Ninja Multi-Config"    },
         { "name": "windows-base", "hidden": true, "inherits": "base", "generator": "Visual Studio 17 2022" }
     ],
     "buildPresets": [
         { "name": "base", "hidden": true, "jobs": 8 },
-
         { "name": "debug-base",   "hidden": true, "configuration": "Debug"   },
         { "name": "release-base", "hidden": true, "configuration": "Release" }
     ],

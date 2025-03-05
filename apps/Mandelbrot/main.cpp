@@ -2,7 +2,7 @@
 
 #include "Mandelbrot.hpp"
 
-#include <Matrix.hpp>
+#include <Tensor.hpp>
 #include <NetPbm.hpp>
 
 int main(int argc, char *argv[])
@@ -58,16 +58,11 @@ int main(int argc, char *argv[])
     const size_t height = 2160;
     const size_t maxIterations = 200;
 
-    // Create color channel matrices
-    Matrix<uint8_t> red(height, width, 0);
-    Matrix<uint8_t> green(height, width, 0);
-    Matrix<uint8_t> blue(height, width, 0);
-
     // Generate the fractal
-    generateColoredMandelbrot(red, green, blue, width, height, colormapChoice, maxIterations);
+    auto rgb = generateColoredMandelbrot(width, height, colormapChoice, maxIterations);
 
     // Write out the PPM
-    EncodePpm(outputPath, red, green, blue);
+    EncodePpm(outputPath, rgb);
 
     return 0;
 }
