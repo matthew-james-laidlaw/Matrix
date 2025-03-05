@@ -2,7 +2,8 @@
 
 #include "Mandelbrot.hpp"
 
-#include <NetPbm.hpp>
+#include <PNG.hpp>
+#include <PPM.hpp>
 #include <Tensor.hpp>
 
 int main(int argc, char* argv[])
@@ -62,6 +63,7 @@ int main(int argc, char* argv[])
 
     // Write out the PPM
     EncodePpm(outputPath, rgb);
+    EncodePng(outputPath + ".png", rgb);
 
     return 0;
 }

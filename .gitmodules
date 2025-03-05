@@ -7,3 +7,6 @@
 [submodule "extern/argparse"]
 	path = extern/argparse
 	url = https://github.com/p-ranav/argparse.git
+[submodule "extern/lodepng"]
+	path = extern/lodepng
+	url = https://github.com/lvandeve/lodepng.git

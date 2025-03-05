@@ -9,7 +9,8 @@
 
 auto EncodePpm(const std::string& filename, Tensor<uint8_t, 3> const& rgb) -> void
 {
-    auto [height, width, _] = rgb.Shape();
+    auto [height, width, channels] = rgb.Shape();
+    Expect(channels == 3, "Input tensor must have 3 channels (RGB)");
 
     std::ofstream outfile(filename, std::ios::binary);
     if (!outfile)
