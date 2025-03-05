@@ -1,17 +1,18 @@
 #pragma once
 
 #include <algorithm>
-#include <thread>
-#include <vector>
-#include <queue>
+#include <condition_variable>
 #include <functional>
 #include <mutex>
-#include <condition_variable>
+#include <queue>
+#include <thread>
 #include <utility>
+#include <vector>
 
 class ThreadPool
 {
 private:
+
     std::vector<std::thread> threads_;
     std::queue<std::function<void()>> tasks_;
     std::mutex queue_mutex_;
@@ -19,6 +20,7 @@ private:
     bool stop_ = false;
 
 public:
+
     ThreadPool(size_t thread_count = std::max(std::thread::hardware_concurrency(), 1u))
     {
         for (size_t i = 0; i < thread_count; ++i)

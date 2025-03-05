@@ -1,22 +1,24 @@
 #pragma once
 
+#include <algorithm>
+#include <array>
 #include <initializer_list>
 #include <memory>
+#include <numeric>
 #include <tuple>
 #include <vector>
-#include <array>
-#include <numeric>
-#include <algorithm>
 
 // Define TensorInitializer correctly
 template <typename T, size_t N>
-struct TensorInitializerHelper {
+struct TensorInitializerHelper
+{
     using type = std::initializer_list<typename TensorInitializerHelper<T, N - 1>::type>;
 };
 
 // Base case: When N = 1, it's just std::initializer_list<T>
 template <typename T>
-struct TensorInitializerHelper<T, 1> {
+struct TensorInitializerHelper<T, 1>
+{
     using type = std::initializer_list<T>;
 };
 
@@ -36,7 +38,7 @@ std::array<size_t, N> ShapeOfInitializer(TensorInitializer<T, N> const& initiali
     if constexpr (N > 1)
     {
         auto first_sublist = *initializer.begin();
-        auto subshape = Shape<T, N - 1>(first_sublist);
+        auto subshape      = Shape<T, N - 1>(first_sublist);
         std::copy(subshape.begin(), subshape.end(), shape.begin() + 1);
 
         for (auto& sublist : initializer)
@@ -68,7 +70,7 @@ void FlattenImpl(std::initializer_list<T> const& initializer, std::vector<T>& ou
 template <typename T, size_t N>
 std::unique_ptr<T[]> Flatten(TensorInitializer<T, N> const& initializer)
 {
-    auto shape = Shape<T, N>(initializer);
+    auto shape  = Shape<T, N>(initializer);
     size_t size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<>());
 
     auto data = std::make_unique<T[]>(size);

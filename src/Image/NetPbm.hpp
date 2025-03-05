@@ -7,10 +7,9 @@
 #include <fstream>
 #include <stdexcept>
 
-auto EncodePpm(const std::string &filename, Tensor<uint8_t, 3> rgb) -> void
+auto EncodePpm(const std::string& filename, Tensor<uint8_t, 3> const& rgb) -> void
 {
-    size_t height = rgb.Shape()[0];
-    size_t width = rgb.Shape()[1];
+    auto [height, width, _] = rgb.Shape();
 
     std::ofstream outfile(filename, std::ios::binary);
     if (!outfile)
@@ -23,6 +22,6 @@ auto EncodePpm(const std::string &filename, Tensor<uint8_t, 3> rgb) -> void
     outfile << "255" << std::endl;
 
     outfile.write(reinterpret_cast<const char*>(rgb.Data()), rgb.Size() * sizeof(uint8_t));
-    
+
     outfile.close();
 }

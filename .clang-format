@@ -1,0 +1,28 @@
+---
+IndentWidth: 4
+BreakBeforeBraces: Custom
+ColumnLimit: 0
+UseTab: Never
+AccessModifierOffset: -4
+EmptyLineAfterAccessModifier: Always
+BreakConstructorInitializers: BeforeComma
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  BeforeLambdaBody: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+AllowShortLambdasOnASingleLine: Empty
+LambdaBodyIndentation: OuterScope
+AlignConsecutiveAssignments: true
+AlignOperands: AlignAfterOperator
+PointerAlignment: Left
+InsertBraces: true

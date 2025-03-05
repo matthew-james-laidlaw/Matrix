@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Tensor.hpp>
 #include <Dispatcher.hpp>
+#include <Tensor.hpp>
 
 #include "ColorMap.hpp"
 
@@ -25,18 +25,26 @@ auto GenerateMandelbrot(size_t height, size_t width) -> Tensor<float, 2>
         std::complex<double> z(0.0, 0.0);
 
         size_t iteration = 0;
-        while (std::abs(z) < 2.0 && iteration < maxIterations) {
+        while (std::abs(z) < 2.0 && iteration < maxIterations)
+        {
             z = z * z + c;
             ++iteration;
         }
 
-        if (iteration < maxIterations) {
+        if (iteration < maxIterations)
+        {
             double absz = std::abs(z);
-            if (absz == 0.0) absz = 1e-10;
+            if (absz == 0.0)
+            {
+                absz = 1e-10;
+            }
+
             double mu = iteration - std::log(std::log(absz)) / std::log(2.0);
+
             intensity({y, x}) = mu / static_cast<double>(maxIterations);
         }
-        else {
+        else
+        {
             intensity({y, x}) = 0.0;
         }
     });
@@ -54,6 +62,7 @@ auto GenerateMandelbrotImage(size_t height, size_t width, Colormap colormap) -> 
     Dispatch2d(height, width, [&](size_t y, size_t x)
     {
         double t = intensity({y, x});
+
         t = std::pow(t, gamma);
         t = std::clamp(t, 0.0, 1.0);
 

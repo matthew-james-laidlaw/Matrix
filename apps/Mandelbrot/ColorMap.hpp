@@ -71,8 +71,8 @@ Color interpolateColor(Palette const& palette, double t)
     t = std::max(std::min(t, 1.0), 0.0);
 
     // Scale t to [0, palette.size()-1].
-    long double pos = t * (palette.size() - 1);
-    size_t index = static_cast<size_t>(pos);
+    long double pos  = t * (palette.size() - 1);
+    size_t index     = static_cast<size_t>(pos);
     long double frac = pos - index;
 
     if (index >= palette.size() - 1)
@@ -82,8 +82,8 @@ Color interpolateColor(Palette const& palette, double t)
     }
 
     // Linear interpolate between palette[index] and palette[index+1].
-    const Color &c0 = palette[index];
-    const Color &c1 = palette[index + 1];
+    const Color& c0 = palette[index];
+    const Color& c1 = palette[index + 1];
     Color result;
     result.r = c0.r + frac * (c1.r - c0.r);
     result.g = c0.g + frac * (c1.g - c0.g);

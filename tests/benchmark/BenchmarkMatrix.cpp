@@ -1,5 +1,5 @@
-#include <benchmark/benchmark.h>
 #include "Matrix.hpp"
+#include <benchmark/benchmark.h>
 
 // // Benchmark for sequential matrix addition.
 // static void BM_SequentialAddition(benchmark::State& state)
@@ -21,7 +21,6 @@
 //     }
 // }
 // BENCHMARK(BM_SequentialAddition)->Args({1000, 1000});
-
 
 // // Benchmark for threaded matrix addition.
 // static void BM_ThreadedAddition(benchmark::State& state)

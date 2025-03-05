@@ -2,10 +2,10 @@
 
 #include "Mandelbrot.hpp"
 
-#include <Tensor.hpp>
 #include <NetPbm.hpp>
+#include <Tensor.hpp>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     argparse::ArgumentParser program("mandelbrot_generator_colormap");
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     {
         program.parse_args(argc, argv);
     }
-    catch (const std::runtime_error &err)
+    catch (const std::runtime_error& err)
     {
         std::cerr << err.what() << "\n";
         std::cerr << program;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     }
 
     // Get user choices from CLI
-    std::string outputPath = program.get<std::string>("output");
+    std::string outputPath  = program.get<std::string>("output");
     std::string colormapStr = program.get<std::string>("--colormap");
 
     // Map string -> enum
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     }
 
     // Render parameters
-    const size_t width = 3840 * 4; // 4K resolution
+    const size_t width  = 3840 * 4; // 4K resolution
     const size_t height = 2160 * 4;
 
     // Generate the fractal

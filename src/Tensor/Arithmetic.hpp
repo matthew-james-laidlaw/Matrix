@@ -21,7 +21,7 @@ auto ElementwiseScalarOperation(T1 left, Tensor<T2, N> const& right)
 }
 
 template <typename Operation, Number T1, Number T2>
-auto ElementwiseBinaryOperation(Tensor<T1, 2> const &left, Tensor<T2, 2> const &right)
+auto ElementwiseBinaryOperation(Tensor<T1, 2> const& left, Tensor<T2, 2> const& right)
 {
     Expect(left.Shape() == right.Shape());
     using ResultType = std::common_type_t<T1, T2>;
@@ -35,7 +35,7 @@ auto ElementwiseBinaryOperation(Tensor<T1, 2> const &left, Tensor<T2, 2> const &
 }
 
 template <typename Operation, Number T1, Number T2>
-auto ElementwiseScalarOperation(Tensor<T1, 2> const &left, T2 right)
+auto ElementwiseScalarOperation(Tensor<T1, 2> const& left, T2 right)
 {
     using ResultType = std::common_type_t<T1, T2>;
     Tensor<ResultType, 2> result(left.Shape());
@@ -48,7 +48,7 @@ auto ElementwiseScalarOperation(Tensor<T1, 2> const &left, T2 right)
 }
 
 template <typename Operation, Number T1, Number T2>
-auto ElementwiseScalarOperation(T1 left, Tensor<T2, 2> const &right)
+auto ElementwiseScalarOperation(T1 left, Tensor<T2, 2> const& right)
 {
     using ResultType = std::common_type_t<T1, T2>;
     Tensor<ResultType, 2> result(left.Shape());
@@ -61,25 +61,25 @@ auto ElementwiseScalarOperation(T1 left, Tensor<T2, 2> const &right)
 }
 
 template <Number T1, Number T2, size_t N>
-auto operator+(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
+auto operator+(Tensor<T1, N> const& left, Tensor<T2, N> const& right)
 {
     return ElementwiseBinaryOperation<std::plus<>, T1, T2>(left, right);
 }
 
 template <Number T1, Number T2, size_t N>
-auto operator-(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
+auto operator-(Tensor<T1, N> const& left, Tensor<T2, N> const& right)
 {
     return ElementwiseBinaryOperation<std::minus<>, T1, T2>(left, right);
 }
 
 template <Number T1, Number T2, size_t N>
-auto operator*(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
+auto operator*(Tensor<T1, N> const& left, Tensor<T2, N> const& right)
 {
     return ElementwiseBinaryOperation<std::multiplies<>, T1, T2>(left, right);
 }
 
 template <Number T1, Number T2, size_t N>
-auto operator/(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
+auto operator/(Tensor<T1, N> const& left, Tensor<T2, N> const& right)
 {
     return ElementwiseBinaryOperation<std::divides<>, T1, T2>(left, right);
 }
