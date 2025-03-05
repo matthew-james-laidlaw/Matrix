@@ -4,7 +4,7 @@
 #include <ThreadPool.hpp>
 
 template <typename Callable>
-auto DispatchBlocks(size_t height, size_t width, Callable&& callable) -> void
+auto Dispatch2d(size_t height, size_t width, Callable&& callable) -> void
 {
     size_t block_height = 256;
     size_t block_width = 256;

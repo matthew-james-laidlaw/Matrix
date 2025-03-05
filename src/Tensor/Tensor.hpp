@@ -13,6 +13,17 @@
 #include <stdexcept>
 #include <vector>
 
+template <size_t N>
+size_t SizeOf(std::array<size_t, N> const& shape)
+{
+    size_t accumulator = 1;
+    for (auto dim : shape)
+    {
+        accumulator *= dim;
+    }
+    return accumulator;
+}
+
 template <Number T, size_t N>
 class Tensor
 {
@@ -23,18 +34,12 @@ private:
     std::unique_ptr<T[]> mData;
 
 public:
+
     Tensor() = delete;
 
-    template <typename... Dims>
-    explicit Tensor(Dims... dims)
-        : shape_{static_cast<size_t>(dims)...}, size_((... * dims)), mData(new T[size_])
-    {}
-
     Tensor(std::array<size_t, N> shape, T initializer)
-        : shape_(shape), size_(1), mData(new T[size_])
+        : shape_(shape), size_(SizeOf(shape)), mData(new T[size_])
     {
-        for (auto dim : shape_)
-            size_ *= dim;
         std::fill(mData.get(), mData.get() + size_, initializer);
     }
 
@@ -107,112 +112,6 @@ public:
         return mData[Index(indices)];
     }
 
-    template <typename Operation, Number T1, Number T2>
-    friend auto ElementwiseOperation(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
-    {
-        using ResultType = std::common_type_t<T1, T2>;
-        Tensor<ResultType, N> result(left.shape_);
-        Operation operation;
-        DispatchBlocks(left.size_, [&](size_t i)
-                       { result.mData[i] = operation(left.mData[i], right.mData[i]); });
-        return result;
-    }
-
-    template <typename Operation, Number T1, Number T2>
-    friend auto ScalarBroadcastOperation(Tensor<T1, N> const &left, T2 right)
-    {
-        using ResultType = std::common_type_t<T1, T2>;
-        Tensor<ResultType, N> result(left.shape_);
-        Operation operation;
-        DispatchBlocks(left.size_, [&](size_t i)
-                       { result.mData[i] = operation(left.mData[i], right); });
-        return result;
-    }
-
-    template <typename Operation, Number T1, Number T2>
-    friend auto ScalarBroadcastOperation(T1 left, Tensor<T2, N> const &right)
-    {
-        using ResultType = std::common_type_t<T1, T2>;
-        Tensor<ResultType, N> result(right.shape_);
-        Operation operation;
-        DispatchBlocks(right.size_, [&](size_t i)
-                       { result.mData[i] = operation(left, right.mData[i]); });
-        return result;
-    }
-
-    template <Number T1, Number T2>
-    friend auto operator+(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
-    {
-        Expect(DimensionsEqual(left, right));
-        return ElementwiseOperation<std::plus<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator-(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
-    {
-        Expect(DimensionsEqual(left, right));
-        return ElementwiseOperation<std::minus<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator*(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
-    {
-        Expect(DimensionsEqual(left, right));
-        return ElementwiseOperation<std::multiplies<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator/(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
-    {
-        Expect(DimensionsEqual(left, right));
-        return ElementwiseOperation<std::divides<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator+(Tensor<T1, N> const& left, T2 right)
-    {
-        return ScalarBroadcastOperation<std::plus<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator+(T1 left, Tensor<T2, N> const& right)
-    {
-        return ScalarBroadcastOperation<std::plus<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator-(Tensor<T1, N> const& left, T2 right)
-    {
-        return ScalarBroadcastOperation<std::minus<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator-(T1 left, Tensor<T2, N> const& right)
-    {
-        return ScalarBroadcastOperation<std::minus<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator*(Tensor<T1, N> const& left, T2 right)
-    {
-        return ScalarBroadcastOperation<std::multiplies<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator*(T1 left, Tensor<T2, N> const& right)
-    {
-        return ScalarBroadcastOperation<std::multiplies<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator/(Tensor<T1, N> const& left, T2 right)
-    {
-        return ScalarBroadcastOperation<std::divides<>, T1, T2>(left, right);
-    }
-
-    template <Number T1, Number T2>
-    friend Tensor operator/(T1 left, Tensor<T2, N> const& right)
-    {
-        return ScalarBroadcastOperation<std::divides<>, T1, T2>(left, right);
-    }
 };
+
+#include "Arithmetic.hpp"

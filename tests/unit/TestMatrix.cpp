@@ -4,13 +4,9 @@
 
 #include <iostream>
 
-TEST(A, A)
+TEST(Tensor, ElementWiseAddition)
 {
-    std::cout << "Hello, World!" << std::endl;
-    EXPECT_EQ(1, 1);
-}
-
-TEST(A, B)
-{
-    EXPECT_EQ(1, 1);
+    auto m1 = Tensor<int, 2>({256, 256}, 1);
+    auto m2 = Tensor<int, 2>({256, 256}, 2);
+    auto m3 = m1 + m2;
 }

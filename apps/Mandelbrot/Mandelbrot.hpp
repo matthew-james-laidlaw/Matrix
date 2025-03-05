@@ -11,12 +11,12 @@ auto GenerateMandelbrot(size_t height, size_t width) -> Tensor<float, 2>
 {
     size_t maxIterations = 200;
 
-    Tensor<float, 2> intensity(height, width);
+    Tensor<float, 2> intensity({height, width}, 0.0f);
 
     const double realMin = -2.5, realMax = 1.0;
     const double imagMin = -1.0, imagMax = 1.0;
 
-    DispatchBlocks(height, width, [&](size_t y, size_t x)
+    Dispatch2d(height, width, [&](size_t y, size_t x)
     {
         double real = realMin + (static_cast<double>(x) / (width - 1)) * (realMax - realMin);
         double imag = imagMin + (static_cast<double>(y) / (height - 1)) * (imagMax - imagMin);
@@ -47,11 +47,11 @@ auto GenerateMandelbrot(size_t height, size_t width) -> Tensor<float, 2>
 auto GenerateMandelbrotImage(size_t height, size_t width, Colormap colormap) -> Tensor<uint8_t, 3>
 {
     auto intensity = GenerateMandelbrot(height, width);
-    Tensor<uint8_t, 3> rgb(height, width, 3);
+    Tensor<uint8_t, 3> rgb({height, width, 3}, 0);
 
     const double gamma = 1.0;
 
-    DispatchBlocks(height, width, [&](size_t y, size_t x)
+    Dispatch2d(height, width, [&](size_t y, size_t x)
     {
         double t = intensity({y, x});
         t = std::pow(t, gamma);
