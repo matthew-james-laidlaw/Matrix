@@ -1,19 +1,11 @@
 #pragma once
 
-#include <Tensor.hpp>
+#include <Expect.hpp>
 #include <Number.hpp>
+#include <Tensor.hpp>
 
 #include <fstream>
 #include <stdexcept>
-
-template <typename Exception = std::runtime_error>
-auto Expect(bool expected, std::string const& message = "internal error")
-{
-    if (!expected)
-    {
-        throw Exception(message);
-    }
-}
 
 auto EncodePpm(const std::string &filename, Tensor<uint8_t, 3> rgb) -> void
 {

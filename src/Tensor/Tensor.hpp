@@ -3,6 +3,7 @@
 #include "Dispatcher.hpp"
 // #include "TensorInitializer.hpp"
 
+#include <Expect.hpp>
 #include <Number.hpp>
 
 #include <array>
@@ -120,24 +121,28 @@ public:
     template <typename T1, typename T2>
     friend auto operator+(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
+        Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::plus<>, T1, T2>(left, right);
     }
 
     template <typename T1, typename T2>
     friend Tensor operator-(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
+        Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::minus<>, T1, T2>(left, right);
     }
 
     template <typename T1, typename T2>
     friend Tensor operator*(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
+        Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::multiplies<>, T1, T2>(left, right);
     }
 
     template <typename T1, typename T2>
     friend Tensor operator/(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
+        Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::divides<>, T1, T2>(left, right);
     }
 };
