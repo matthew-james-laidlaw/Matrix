@@ -7,8 +7,24 @@
     },
     "configurePresets": [
         {
-            "name": "default",
-            "binaryDir": "${sourceDir}/build"
+            "name": "debug",
+            "binaryDir": "${sourceDir}/build/debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Debug"
+                }
+            }
+        },
+        {
+            "name": "release",
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Release"
+                }
+            }
         }
     ],
     "buildPresets": [
@@ -20,13 +36,13 @@
         {
             "name": "debug",
             "inherits": "base",
-            "configurePreset": "default",
+            "configurePreset": "debug",
             "configuration": "Debug"
         },
         {
             "name": "release",
             "inherits": "base",
-            "configurePreset": "default",
+            "configurePreset": "release",
             "configuration": "Release"
         }
     ],
@@ -34,7 +50,6 @@
         {
             "name": "base",
             "hidden": true,
-            "configurePreset": "default",
             "output": {
                 "outputOnFailure": true
             },
@@ -46,11 +61,13 @@
         {
             "name": "debug",
             "inherits": "base",
+            "configurePreset": "debug",
             "configuration": "Debug"
         },
         {
             "name": "release",
             "inherits": "base",
+            "configurePreset": "release",
             "configuration": "Release"
         }
     ],
@@ -58,7 +75,7 @@
         {
             "name": "debug",
             "steps": [
-                { "type": "configure", "name": "default" },
+                { "type": "configure", "name": "debug" },
                 { "type": "build", "name": "debug" },
                 { "type": "test", "name": "debug" }
             ]
@@ -66,7 +83,7 @@
         {
             "name": "release",
             "steps": [
-                { "type": "configure", "name": "default" },
+                { "type": "configure", "name": "release" },
                 { "type": "build", "name": "release" },
                 { "type": "test", "name": "release" }
             ]
