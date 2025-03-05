@@ -106,50 +106,38 @@ public:
         return mData[Index(indices)];
     }
 
-    template <typename Operation>
-    friend Tensor ElementwiseOperationSequential(Tensor const &left, Tensor const &right)
+    template <typename Operation, typename T1, typename T2>
+    static auto ElementwiseOperation(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
-        Tensor result(left.shape_);
-        Operation operation;
-        for (size_t i = 0; i < left.size_; ++i)
-        {
-            result.mData[i] = operation(left.mData[i], right.mData[i]);
-        }
-        return result;
-    }
-
-    template <typename Operation>
-    friend Tensor ElementwiseOperation(Tensor const &left, Tensor const &right)
-    {
-        Tensor result(left.shape_);
+        using ResultType = std::common_type_t<T1, T2>;
+        Tensor<ResultType, N> result(left.shape_);
         Operation operation;
         DispatchBlocks(left.size_, [&](size_t i)
                        { result.mData[i] = operation(left.mData[i], right.mData[i]); });
         return result;
     }
 
-    friend bool operator==(Tensor const &left, Tensor const &right)
+    template <typename T1, typename T2>
+    friend auto operator+(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
-        return left.shape_ == right.shape_;
+        return ElementwiseOperation<std::plus<>, T1, T2>(left, right);
     }
 
-    friend Tensor operator+(Tensor const &left, Tensor const &right)
+    template <typename T1, typename T2>
+    friend Tensor operator-(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
-        return ElementwiseOperation<std::plus<T>>(left, right);
+        return ElementwiseOperation<std::minus<>, T1, T2>(left, right);
     }
 
-    friend Tensor operator-(Tensor const &left, Tensor const &right)
+    template <typename T1, typename T2>
+    friend Tensor operator*(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
-        return ElementwiseOperation<std::minus<T>>(left, right);
+        return ElementwiseOperation<std::multiplies<>, T1, T2>(left, right);
     }
 
-    friend Tensor operator*(Tensor const &left, Tensor const &right)
+    template <typename T1, typename T2>
+    friend Tensor operator/(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
-        return ElementwiseOperation<std::multiplies<T>>(left, right);
-    }
-
-    friend Tensor operator/(Tensor const &left, Tensor const &right)
-    {
-        return ElementwiseOperation<std::divides<T>>(left, right);
+        return ElementwiseOperation<std::divides<>, T1, T2>(left, right);
     }
 };
