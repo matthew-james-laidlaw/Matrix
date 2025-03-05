@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Dispatcher.hpp"
-// #include "TensorInitializer.hpp"
+#include "TensorInitializer.hpp"
 
 #include <Expect.hpp>
 #include <Number.hpp>
@@ -13,50 +13,42 @@
 #include <stdexcept>
 #include <vector>
 
-template <size_t N>
-size_t SizeOf(std::array<size_t, N> const& shape)
-{
-    size_t accumulator = 1;
-    for (auto dim : shape)
-    {
-        accumulator *= dim;
-    }
-    return accumulator;
-}
-
 template <Number T, size_t N>
 class Tensor
 {
 private:
-
     std::array<size_t, N> shape_;
     size_t size_;
-    std::unique_ptr<T[]> mData;
+    std::unique_ptr<T[]> data_;
 
 public:
-
     Tensor() = delete;
 
-    Tensor(std::array<size_t, N> shape, T initializer)
-        : shape_(shape), size_(SizeOf(shape)), mData(new T[size_])
+    Tensor(std::array<size_t, N> const &shape)
+        : shape_(shape), size_(SizeFromShape(shape_)), data_(new T[size_])
     {
-        std::fill(mData.get(), mData.get() + size_, initializer);
     }
 
-    // Tensor(TensorInitializer<T, N> const &initializer)
-    // {
-    //     std::tie(shape_, size_) = Shape(initializer);
-    //     mData = Flatten(initializer);
-    // }
+    Tensor(std::array<size_t, N> const &shape, T initializer)
+        : Tensor(shape)
+    {
+        std::fill(data_.get(), data_.get() + size_, initializer);
+    }
+
+    Tensor(TensorInitializer<T, N> const& initializer)
+    {
+        std::tie(shape_, size_) = ShapeOfInitializer(initializer);
+        data_ = Flatten(initializer);
+    }
 
     Tensor(Tensor const &other)
-        : shape_(other.shape_), size_(other.size_), mData(new T[size_])
+        : Tensor(other.shape_)
     {
-        std::copy(other.mData.get(), other.mData.get() + size_, mData.get());
+        std::copy(other.data_.get(), other.data_.get() + size_, data_.get());
     }
 
     Tensor(Tensor &&other) noexcept
-        : shape_(std::move(other.shape_)), size_(other.size_), mData(std::move(other.mData))
+        : shape_(std::move(other.shape_)), size_(other.size_), data_(std::move(other.data_))
     {
         other.size_ = 0;
     }
@@ -64,54 +56,81 @@ public:
     Tensor &operator=(Tensor const &other)
     {
         if (this == &other)
+        {
             return *this;
-        
+        }
+
         shape_ = other.shape_;
         size_ = other.size_;
-        mData.reset(new T[size_]);
-        std::copy(other.mData.get(), other.mData.get() + size_, mData.get());
+        data_.reset(new T[size_]);
+        std::copy(other.data_.get(), other.data_.get() + size_, data_.get());
+
         return *this;
     }
 
     Tensor &operator=(Tensor &&other) noexcept
     {
         if (this == &other)
+        {
             return *this;
-        
+        }
+
         shape_ = std::move(other.shape_);
         size_ = other.size_;
-        mData = std::move(other.mData);
+        data_ = std::move(other.data_);
+
         other.size_ = 0;
+
         return *this;
     }
 
     ~Tensor() = default;
 
-    std::array<size_t, N> Shape() const { return shape_; }
-    size_t Size() const { return size_; }
-    const T *Data() const { return mData.get(); }
+    auto Shape() const { return shape_; }
+    auto Size() const { return size_; }
+    auto Data() const { return data_.get(); }
 
-    size_t Index(std::array<size_t, N> indices) const
+    inline auto &operator()(std::array<size_t, N> indices)
     {
-        size_t index = 0, stride = 1;
-        for (int i = N - 1; i >= 0; --i)
+        return data_[Index(indices)];
+    }
+
+    inline auto operator()(std::array<size_t, N> indices) const
+    {
+        return data_[Index(indices)];
+    }
+
+private:
+    static auto SizeFromShape(std::array<size_t, N> const &shape)
+    {
+        size_t accumulator = 1;
+        for (auto dimension : shape)
         {
-            index += indices[i] * stride;
-            stride *= shape_[i];
+            accumulator *= dimension;
         }
-        return index;
+        return accumulator;
     }
 
-    inline T &operator()(std::array<size_t, N> indices)
+    inline auto Index(std::array<size_t, 1> const &indices) const
     {
-        return mData[Index(indices)];
+        return indices[0];
     }
 
-    inline T operator()(std::array<size_t, N> indices) const
+    inline auto Index(std::array<size_t, 2> const &indices) const
     {
-        return mData[Index(indices)];
+        auto [y, x] = indices;
+        auto [_, width] = shape_;
+        return y * width + x;
     }
 
+    inline auto Index(std::array<size_t, 3> const &indices) const
+    {
+        auto [z, y, x] = indices;
+        auto [_, height, width] = shape_;
+        return z * (height * width) +
+               y * width +
+               x;
+    }
 };
 
 #include "Arithmetic.hpp"
