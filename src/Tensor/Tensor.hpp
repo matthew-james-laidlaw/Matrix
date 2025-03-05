@@ -108,7 +108,7 @@ public:
     }
 
     template <typename Operation, typename T1, typename T2>
-    static auto ElementwiseOperation(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
+    friend auto ElementwiseOperation(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
         using ResultType = std::common_type_t<T1, T2>;
         Tensor<ResultType, N> result(left.shape_);
