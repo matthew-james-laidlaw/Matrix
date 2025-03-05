@@ -107,7 +107,7 @@ public:
         return mData[Index(indices)];
     }
 
-    template <typename Operation, typename T1, typename T2>
+    template <typename Operation, Number T1, Number T2>
     friend auto ElementwiseOperation(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
         using ResultType = std::common_type_t<T1, T2>;
@@ -118,31 +118,101 @@ public:
         return result;
     }
 
-    template <typename T1, typename T2>
+    template <typename Operation, Number T1, Number T2>
+    friend auto ScalarBroadcastOperation(Tensor<T1, N> const &left, T2 right)
+    {
+        using ResultType = std::common_type_t<T1, T2>;
+        Tensor<ResultType, N> result(left.shape_);
+        Operation operation;
+        DispatchBlocks(left.size_, [&](size_t i)
+                       { result.mData[i] = operation(left.mData[i], right); });
+        return result;
+    }
+
+    template <typename Operation, Number T1, Number T2>
+    friend auto ScalarBroadcastOperation(T1 left, Tensor<T2, N> const &right)
+    {
+        using ResultType = std::common_type_t<T1, T2>;
+        Tensor<ResultType, N> result(right.shape_);
+        Operation operation;
+        DispatchBlocks(right.size_, [&](size_t i)
+                       { result.mData[i] = operation(left, right.mData[i]); });
+        return result;
+    }
+
+    template <Number T1, Number T2>
     friend auto operator+(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
         Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::plus<>, T1, T2>(left, right);
     }
 
-    template <typename T1, typename T2>
+    template <Number T1, Number T2>
     friend Tensor operator-(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
         Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::minus<>, T1, T2>(left, right);
     }
 
-    template <typename T1, typename T2>
+    template <Number T1, Number T2>
     friend Tensor operator*(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
         Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::multiplies<>, T1, T2>(left, right);
     }
 
-    template <typename T1, typename T2>
+    template <Number T1, Number T2>
     friend Tensor operator/(Tensor<T1, N> const &left, Tensor<T2, N> const &right)
     {
         Expect(DimensionsEqual(left, right));
         return ElementwiseOperation<std::divides<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator+(Tensor<T1, N> const& left, T2 right)
+    {
+        return ScalarBroadcastOperation<std::plus<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator+(T1 left, Tensor<T2, N> const& right)
+    {
+        return ScalarBroadcastOperation<std::plus<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator-(Tensor<T1, N> const& left, T2 right)
+    {
+        return ScalarBroadcastOperation<std::minus<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator-(T1 left, Tensor<T2, N> const& right)
+    {
+        return ScalarBroadcastOperation<std::minus<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator*(Tensor<T1, N> const& left, T2 right)
+    {
+        return ScalarBroadcastOperation<std::multiplies<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator*(T1 left, Tensor<T2, N> const& right)
+    {
+        return ScalarBroadcastOperation<std::multiplies<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator/(Tensor<T1, N> const& left, T2 right)
+    {
+        return ScalarBroadcastOperation<std::divides<>, T1, T2>(left, right);
+    }
+
+    template <Number T1, Number T2>
+    friend Tensor operator/(T1 left, Tensor<T2, N> const& right)
+    {
+        return ScalarBroadcastOperation<std::divides<>, T1, T2>(left, right);
     }
 };
