@@ -27,7 +27,7 @@ jobs:
               shell: bash
               run: |
                 if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-                    echo "PLATFORM=apple" >> $GITHUB_ENV
+                    echo "PLATFORM=macos" >> $GITHUB_ENV
                 elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
                     echo "PLATFORM=linux" >> $GITHUB_ENV
                 else
