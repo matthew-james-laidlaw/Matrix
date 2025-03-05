@@ -1,7 +1,7 @@
 # Matrix
 [![unit](https://github.com/matthew-james-laidlaw/Matrix/actions/workflows/unit.yml/badge.svg?branch=main)](https://github.com/matthew-james-laidlaw/Matrix/actions/workflows/unit.yml)
 
-A library providing a tensor class supporting up to 3 dimensions. Focused on image processing.
+A (mostly completely self-implemented) library providing a tensor class supporting up to 3 dimensions. Focused on image processing. Libraries pulled in for argument parsing, testing, and image encoding e.g. lodepng).
 
 # Design Decisions
 * The focus of this library is on image processing, thus the tensor class is not fully generic for any order. Really, this library supports 1D, 2D, and 3D tensors where a 3D tensor can represent a planar image (channels x height x width) or an interleaved image (height x width x channels).
