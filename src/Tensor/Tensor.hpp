@@ -120,12 +120,7 @@ private:
 
     static auto SizeFromShape(std::array<size_t, N> const& shape)
     {
-        size_t accumulator = 1;
-        for (auto dimension : shape)
-        {
-            accumulator *= dimension;
-        }
-        return accumulator;
+        return std::accumulate(shape.begin(), shape.end(), 1ull, std::multiplies<size_t>());
     }
 
     inline auto Index(std::array<size_t, 1> const& indices) const
