@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Number.hpp>
+#include <Tensor.hpp>
+
 #include <functional>
 
 template <typename Operation, Number T1, Number T2, size_t N>

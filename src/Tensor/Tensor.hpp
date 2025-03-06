@@ -39,10 +39,10 @@ public:
     }
 
     Tensor(TensorInitializer<T, N> const& initializer)
-    {
-        std::tie(shape_, size_) = ShapeOfInitializer(initializer);
-        data_                   = Flatten(initializer);
-    }
+        : shape_(InitializerListShape<T, N>(initializer))
+        , size_(SizeFromShape(shape_))
+        , data_(InitializerListFlatten<T, N>(initializer))
+    {}
 
     Tensor(Tensor const& other)
         : Tensor(other.shape_)
@@ -141,6 +141,20 @@ private:
         auto [_, height, width] = shape_;
         return z * (height * width) + y * width + x;
     }
+
+    friend bool operator==(Tensor const& left, Tensor const& right)
+    {
+        // Expect(DimensionsEqual(left, right));
+        for (size_t i = 0; i < left.size_; ++i)
+        {
+            if (left.data_[i] != right.data_[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
 };
 
 #include "Arithmetic.hpp"
