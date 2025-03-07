@@ -3,6 +3,7 @@
 #include <Number.hpp>
 #include <Tensor.hpp>
 #include <Expect.hpp>
+#include <Dispatcher.hpp>
 
 #include <functional>
 
