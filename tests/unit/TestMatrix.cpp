@@ -8,50 +8,49 @@
 #include <vector>
 #include <stdexcept>
 
-#include <Arithmetic.hpp>
 #include <Dispatcher.hpp>
 #include <Expect.hpp>
 #include <Number.hpp>
 #include <PNG.hpp>
 #include <PPM.hpp>
 #include <Tensor.hpp>
-#include <TensorInitializer.hpp>
 #include <ThreadPool.hpp>
 
-static const Tensor<int, 1> v1 = { 1, 2 };
-
-static const Tensor<int, 2> m1 =
+static const Tensor<int, 1> v1({ 2 },
 {
-    { 1, 2 },
-    { 3, 4 },
-};
+    1, 2
+});
 
-static const Tensor<int, 2> m2 =
+static const Tensor<int, 2> m1({ 2, 2 },
 {
-    { 1, 2, 3 },
-    { 4, 5, 6 },
-};
+    1, 2,
+    3, 4,
+});
 
-static const Tensor<int, 3> t1 =
+static const Tensor<int, 2> m2({ 2, 3 },
 {
-    {
-        { 1, 2 },
-        { 3, 4 },
-    },
-    {
-        { 5, 6 },
-        { 7, 8 },
-    },
-};
+    1, 2, 3,
+    4, 5, 6,
+});
+
+static const Tensor<int, 3> t1({ 2, 2, 2 },
+{
+    1, 2,
+    3, 4,
+
+    5, 6,
+    7, 8,
+});
 
 TEST(TensorTests, ElementwiseAddition)
 {
     auto actual = m1 + m1;
 
-    Tensor<int, 2> expected = {
-        { 2, 4 },
-        { 6, 8 },
-    };
+    Tensor<int, 2> expected({ 2, 2 },
+    {
+        2, 4,
+        6, 8,
+    });
 
     EXPECT_EQ(expected, actual);
 }
@@ -65,10 +64,11 @@ TEST(TensorTests, ElementwiseSubtraction_Successful)
 {
     auto actual = m1 - m1;
 
-    Tensor<int, 2> expected = {
-        { 0, 0 },
-        { 0, 0 },
-    };
+    Tensor<int, 2> expected({ 2, 2 },
+    {
+        0, 0,
+        0, 0,
+    });
 
     EXPECT_EQ(expected, actual);
 }
@@ -77,10 +77,11 @@ TEST(TensorTests, ElementwiseMultiplication_Successful)
 {
     auto actual = m1 * m1;
 
-    Tensor<int, 2> expected = {
-        { 1, 4  },
-        { 9, 16 },
-    };
+    Tensor<int, 2> expected({ 2, 2 },
+    {
+        1,  4,
+        9, 16,
+    });
 
     EXPECT_EQ(expected, actual);
 }
@@ -89,10 +90,11 @@ TEST(TensorTests, ElementwiseDivision_Successful)
 {
     auto actual = m1 / m1;
 
-    Tensor<int, 2> expected = {
-        { 1, 1 },
-        { 1, 1 },
-    };
+    Tensor<int, 2> expected({ 2, 2 },
+    {
+        1, 1,
+        1, 1,
+    });
 
     EXPECT_EQ(expected, actual);
 }

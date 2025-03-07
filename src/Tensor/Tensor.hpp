@@ -1,11 +1,17 @@
 #pragma once
 
-#include "Shape.hpp"
 #include "Number.hpp"
 
 #include <array>
 #include <memory>
 #include <numeric>
+
+template <size_t Order>
+concept ValidOrder = (Order == 1 || Order == 2 || Order == 3);
+
+template <size_t Order, typename... Dimensions>
+concept ValidDimensions = (sizeof...(Dimensions) == Order) &&
+                          (std::convertible_to<Dimensions, size_t> && ...);
 
 template <Number T, size_t Order>
     requires ValidOrder<Order>
@@ -24,19 +30,19 @@ public:
 
     Tensor(std::array<size_t, Order> const& shape)
         : shape_(shape)
-        , data_(std::make_unique<T[]>(shape.Size()))
+        , data_(std::make_unique<T[]>(Size()))
     {}
 
     Tensor(std::array<size_t, Order> const& shape, T initializer)
         : Tensor(shape)
     {
-        std::fill(data_.get(), data_.get() + shape.Size(), initializer);
+        std::fill(data_.get(), data_.get() + Size(), initializer);
     }
 
     Tensor(std::array<size_t, Order> const& shape, std::initializer_list<T> const& initializer)
         : Tensor(shape)
     {
-        if (initializer.size() != shape.Size())
+        if (initializer.size() != Size())
         {
             throw std::runtime_error("invalid tensor initializer list");
         }
@@ -46,7 +52,7 @@ public:
     Tensor(Tensor const& other)
         : Tensor(other.shape_)
     {
-        std::copy(other.data_.get(), other.data_.get() + shape_.Size(), data_.get());
+        std::copy(other.data_.get(), other.data_.get() + Size(), data_.get());
     }
 
     Tensor(Tensor&& other)
@@ -62,8 +68,8 @@ public:
         }
 
         shape_ = other.shape_;
-        data_  = std::make_unique<T[]>(shape_.Size());
-        std::copy(other.data_.get(), other.data_.get() + shape_.Size(), data_.get());
+        data_  = std::make_unique<T[]>(Size());
+        std::copy(other.data_.get(), other.data_.get() + Size(), data_.get());
 
         return *this;
     }
@@ -88,21 +94,44 @@ public:
 
     auto Size() const -> size_t
     {
-        std::accumulate(shape_.begin(), shape_.end(), size_t(1), std::multiplies<>());
+        return std::accumulate(shape_.begin(), shape_.end(), size_t(1), std::multiplies<>());
+    }
+
+    auto Data() const -> const T* const
+    {
+        return data_.get();
     }
 
     template <typename... Indices>
-        requires ValidDimensions<Indices...>
+        requires ValidDimensions<Order, Indices...>
     inline auto operator()(Indices... indices) -> T&
     {
         return data_[Linear(indices...)];
     }
 
     template <typename... Indices>
-        requires ValidDimensions<Indices...>
+        requires ValidDimensions<Order, Indices...>
     inline auto operator()(Indices... indices) const -> T
     {
         return data_[Linear(indices...)];
+    }
+
+    friend bool operator==(Tensor const& left, Tensor const& right)
+    {
+        if (left.shape_ != right.shape_)
+        {
+            return false;
+        }
+
+        for (size_t i = 0; i < left.Size(); ++i)
+        {
+            if (left.data_[i] != right.data_[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 private:
@@ -123,5 +152,6 @@ private:
         auto [_, d2, d3] = shape_;
         return i * d2 * d3 + j * d3 + k;
     }
-
 };
+
+#include <Arithmetic.hpp>
