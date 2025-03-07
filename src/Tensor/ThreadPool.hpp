@@ -9,6 +9,28 @@
 #include <utility>
 #include <vector>
 
+auto worker = [this]()
+{
+    while (true)
+    {
+        std::function<void()> task;
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex_);
+            cv_.wait(lock, [this]
+            {
+                return stop_ || !tasks_.empty();
+            });
+            if (stop_ && tasks_.empty())
+            {
+                return;
+            }
+            task = std::move(tasks_.front());
+            tasks_.pop();
+        }
+        task();
+    }
+};
+
 class ThreadPool
 {
 private:
@@ -25,34 +47,7 @@ public:
     {
         for (size_t i = 0; i < thread_count; ++i)
         {
-            threads_.emplace_back([this]()
-            {
-                while (true)
-                {
-                    std::function<void()> task;
-                    {
-                        std::unique_lock<std::mutex> lock(this->queue_mutex_);
-                        this->cv_.wait(lock, [this]
-                        {
-                            // Wake up if there is a task or if we're stopping
-                            return this->stop_ || !this->tasks_.empty();
-                        });
-
-                        // If we are stopping and have no tasks, break out of loop
-                        if (this->stop_ && this->tasks_.empty())
-                        {
-                            return;
-                        }
-
-                        // Otherwise, pop a task from the queue
-                        task = std::move(this->tasks_.front());
-                        this->tasks_.pop();
-                    }
-
-                    // Execute the task outside the lock
-                    task();
-                }
-            });
+            threads_.emplace_back(worker);
         }
     }
 
