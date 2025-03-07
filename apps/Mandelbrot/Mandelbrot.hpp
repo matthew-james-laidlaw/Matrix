@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Dispatcher.hpp>
+#include <Dispatch.hpp>
 #include <Tensor.hpp>
 
 #include "ColorMap.hpp"
