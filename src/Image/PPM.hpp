@@ -1,11 +1,9 @@
 #pragma once
 
 #include <Expect.hpp>
-#include <Number.hpp>
 #include <Tensor.hpp>
 
 #include <fstream>
-#include <stdexcept>
 
 auto EncodePpm(const std::string& filename, Tensor<uint8_t, 3> const& rgb) -> void
 {
