@@ -76,18 +76,102 @@ TEST(MatrixTests, InitializerListConstructorThrowsOnMismatchedDimensions)
 
 TEST(MatrixTests, CopyConstructor)
 {
+    size_t height = 2;
+    size_t width = 2;
+
+    auto t1 = Tensor<int, 2> {
+        { height, width },
+        {
+            1, 2,
+            3, 4,
+        }
+    };
+
+    Tensor<int, 2> t2(t1);
+
+    EXPECT_EQ(t2.Shape(), (std::array<size_t, 2>{height, width}));
+    EXPECT_EQ(t2.Size(), height * width);
+    
+    EXPECT_EQ(t2(0, 0), 1);
+    EXPECT_EQ(t2(0, 1), 2);
+    EXPECT_EQ(t2(1, 0), 3);
+    EXPECT_EQ(t2(1, 1), 4);
 }
 
 TEST(MatrixTests, MoveConstructor)
 {
+    size_t height = 2;
+    size_t width = 2;
+
+    auto t1 = Tensor<int, 2> {
+        { height, width },
+        {
+            1, 2,
+            3, 4,
+        }
+    };
+
+    Tensor<int, 2> t2(std::move(t1));
+
+    EXPECT_EQ(t2.Shape(), (std::array<size_t, 2>{height, width}));
+    EXPECT_EQ(t2.Size(), height * width);
+    
+    EXPECT_EQ(t2(0, 0), 1);
+    EXPECT_EQ(t2(0, 1), 2);
+    EXPECT_EQ(t2(1, 0), 3);
+    EXPECT_EQ(t2(1, 1), 4);
+
+    EXPECT_EQ(t1.Data(), nullptr);
 }
 
 TEST(MatrixTests, CopyAssignment)
 {
+    size_t height = 2;
+    size_t width = 2;
+
+    auto t1 = Tensor<int, 2> {
+        { height, width },
+        {
+            1, 2,
+            3, 4,
+        }
+    };
+
+    Tensor<int, 2> t2 = t1;
+
+    EXPECT_EQ(t2.Shape(), (std::array<size_t, 2>{height, width}));
+    EXPECT_EQ(t2.Size(), height * width);
+    
+    EXPECT_EQ(t2(0, 0), 1);
+    EXPECT_EQ(t2(0, 1), 2);
+    EXPECT_EQ(t2(1, 0), 3);
+    EXPECT_EQ(t2(1, 1), 4);
 }
 
 TEST(MatrixTests, MoveAssignment)
 {
+    size_t height = 2;
+    size_t width = 2;
+
+    auto t1 = Tensor<int, 2> {
+        { height, width },
+        {
+            1, 2,
+            3, 4,
+        }
+    };
+
+    Tensor<int, 2> t2 = std::move(t1);
+
+    EXPECT_EQ(t2.Shape(), (std::array<size_t, 2>{height, width}));
+    EXPECT_EQ(t2.Size(), height * width);
+    
+    EXPECT_EQ(t2(0, 0), 1);
+    EXPECT_EQ(t2(0, 1), 2);
+    EXPECT_EQ(t2(1, 0), 3);
+    EXPECT_EQ(t2(1, 1), 4);
+
+    EXPECT_EQ(t1.Data(), nullptr);
 }
 
 TEST(MatrixTests, Addition)
