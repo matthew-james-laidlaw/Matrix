@@ -8,13 +8,10 @@
 auto EncodePpm(const std::string& filename, Tensor<uint8_t, 3> const& rgb) -> void
 {
     auto [height, width, channels] = rgb.Shape();
-    Expect(channels == 3, "Input tensor must have 3 channels (RGB)");
+    Expect(channels == 3, "error: input tensor must have 3 channels (RGB)");
 
     std::ofstream outfile(filename, std::ios::binary);
-    if (!outfile)
-    {
-        throw std::runtime_error("error: unable to open file for writing");
-    }
+    Expect(static_cast<bool>(outfile), "error: unable to open file for writing");
 
     outfile << "P6" << std::endl;
     outfile << width << " " << height << std::endl;

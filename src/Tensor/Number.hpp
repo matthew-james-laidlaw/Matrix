@@ -1,6 +1,9 @@
+// clang-format off
+
 #pragma once
 
 #include <cstdint>
+#include <complex>
 #include <concepts>
 
 template <typename T>
@@ -24,4 +27,11 @@ concept Real = std::same_as<T, float>
 			|| std::same_as<T, long double>;
 
 template <typename T>
-concept Number = Integer<T> || Real<T>;
+concept Complex = std::same_as<T, std::complex<float>>
+               || std::same_as<T, std::complex<double>>
+			   || std::same_as<T, std::complex<long double>>;
+
+template <typename T>
+concept Number = Integer<T> || Real<T> || Complex<T>;
+
+// clang-format on

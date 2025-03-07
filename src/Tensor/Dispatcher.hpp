@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Number.hpp>
 #include <ThreadPool.hpp>
 
 template <typename Callable>
