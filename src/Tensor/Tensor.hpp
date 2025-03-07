@@ -13,12 +13,19 @@
 #include <stdexcept>
 #include <vector>
 
-template <Number T, size_t N>
+template <size_t N>
+concept ValidOrder = (N == 1 || N == 2 || N == 3);
+
+template <size_t Order, typename... Indices>
+concept ValidIndices = (sizeof...(Indices) == Order && (std::is_convertible_v<Indices, size_t> && ...));
+
+template <Number T, size_t Order>
+    requires ValidOrder<Order>
 class Tensor
 {
 private:
 
-    std::array<size_t, N> shape_;
+    std::array<size_t, Order> shape_;
     size_t size_;
     std::unique_ptr<T[]> data_;
 
@@ -26,22 +33,22 @@ public:
 
     Tensor() = delete;
 
-    Tensor(std::array<size_t, N> const& shape)
+    Tensor(std::array<size_t, Order> const& shape)
         : shape_(shape)
-        , size_(SizeFromShape(shape_))
+        , size_(Size(shape_))
         , data_(new T[size_])
     {}
 
-    Tensor(std::array<size_t, N> const& shape, T initializer)
+    Tensor(std::array<size_t, Order> const& shape, T initializer)
         : Tensor(shape)
     {
         std::fill(data_.get(), data_.get() + size_, initializer);
     }
 
-    Tensor(TensorInitializer<T, N> const& initializer)
-        : shape_(InitializerListShape<T, N>(initializer))
-        , size_(SizeFromShape(shape_))
-        , data_(InitializerListFlatten<T, N>(initializer))
+    Tensor(TensorInitializer<T, Order> const& initializer)
+        : shape_(InitializerShape<T, Order>(initializer))
+        , size_(Size(shape_))
+        , data_(InitializerFlatten<T, Order>(initializer))
     {}
 
     Tensor(Tensor const& other)
@@ -106,38 +113,40 @@ public:
         return data_.get();
     }
 
-    inline auto& operator()(std::array<size_t, N> indices)
+    template <typename... Indices>
+        requires ValidIndices<Order, Indices...>
+    inline auto& operator()(Indices... indices)
     {
-        return data_[Index(indices)];
+        return data_[LinearIndex(indices...)];
     }
 
-    inline auto operator()(std::array<size_t, N> indices) const
+    template <typename... Indices>
+        requires ValidIndices<Order, Indices...>
+    inline auto operator()(Indices... indices) const
     {
-        return data_[Index(indices)];
+        return data_[LinearIndex(indices...)];
     }
 
 private:
 
-    static auto SizeFromShape(std::array<size_t, N> const& shape)
+    static auto Size(std::array<size_t, Order> const& shape)
     {
         return std::accumulate(shape.begin(), shape.end(), 1ull, std::multiplies<size_t>());
     }
 
-    inline auto Index(std::array<size_t, 1> const& indices) const
+    inline auto LinearIndex(size_t i) const
     {
-        return indices[0];
+        return i;
     }
 
-    inline auto Index(std::array<size_t, 2> const& indices) const
+    inline auto LinearIndex(size_t y, size_t x) const
     {
-        auto [y, x]     = indices;
         auto [_, width] = shape_;
         return y * width + x;
     }
 
-    inline auto Index(std::array<size_t, 3> const& indices) const
+    inline auto LinearIndex(size_t z, size_t y, size_t x) const
     {
-        auto [z, y, x]          = indices;
         auto [_, height, width] = shape_;
         return z * (height * width) + y * width + x;
     }
@@ -154,7 +163,6 @@ private:
         }
         return true;
     }
-
 };
 
 #include "Arithmetic.hpp"

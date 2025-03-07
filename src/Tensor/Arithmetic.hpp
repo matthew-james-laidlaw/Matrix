@@ -32,7 +32,7 @@ auto ElementwiseBinaryOperation(Tensor<T1, 2> const& left, Tensor<T2, 2> const& 
     Operation operation;
     Dispatch2d(left.Shape()[0], left.Shape()[1], [&](size_t y, size_t x)
     {
-        result({y, x}) = operation(left({y, x}), right({y, x}));
+        result(y, x) = operation(left(y, x), right(y, x));
     });
     return result;
 }
@@ -45,7 +45,7 @@ auto ElementwiseScalarOperation(Tensor<T1, 2> const& left, T2 right)
     Operation operation;
     Dispatch2d(left.Shape()[0], left.Shape()[1], [&](size_t y, size_t x)
     {
-        result({y, x}) = operation(left({y, x}), right);
+        result(y, x) = operation(left(y, x), right);
     });
     return result;
 }
@@ -58,7 +58,7 @@ auto ElementwiseScalarOperation(T1 left, Tensor<T2, 2> const& right)
     Operation operation;
     Dispatch2d(left.Shape()[0], left.Shape()[1], [&](size_t y, size_t x)
     {
-        result({y, x}) = operation(left, right({y, x}));
+        result(y, x) = operation(left, right(y, x));
     });
     return result;
 }

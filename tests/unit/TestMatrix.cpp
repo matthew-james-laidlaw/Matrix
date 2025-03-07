@@ -1,9 +1,12 @@
+// clang-format off
+
 #include <atomic>
 #include <cstdio>
 #include <fstream>
 #include <gtest/gtest.h>
 #include <utility>
 #include <vector>
+#include <stdexcept>
 
 #include <Arithmetic.hpp>
 #include <Dispatcher.hpp>
@@ -15,63 +18,83 @@
 #include <TensorInitializer.hpp>
 #include <ThreadPool.hpp>
 
-TEST(TensorTests, ElementwiseAddition)
+static const Tensor<int, 1> v1 = { 1, 2 };
+
+static const Tensor<int, 2> m1 =
 {
-    auto m1 = Tensor<int, 2>
+    { 1, 2 },
+    { 3, 4 },
+};
+
+static const Tensor<int, 2> m2 =
+{
+    { 1, 2, 3 },
+    { 4, 5, 6 },
+};
+
+static const Tensor<int, 3> t1 =
+{
     {
         { 1, 2 },
         { 3, 4 },
-    };
-
-    auto m2 = Tensor<int, 2>
+    },
     {
-        { 4, 3 },
-        { 2, 1 },
-    };
+        { 5, 6 },
+        { 7, 8 },
+    },
+};
 
-    auto expected = Tensor<int, 2>
-    {
-        { 5, 5 },
-        { 5, 5 },
-    };
-    
-    auto actual = m1 + m2;
+TEST(TensorTests, ElementwiseAddition)
+{
+    auto actual = m1 + m1;
 
-    std::cout << m1({0, 0}) << std::endl;
-    std::cout << m2({0, 0}) << std::endl;
-    std::cout << actual({0, 0}) << std::endl;
+    Tensor<int, 2> expected = {
+        { 2, 4 },
+        { 6, 8 },
+    };
 
     EXPECT_EQ(expected, actual);
 }
 
-TEST(TensorTests, ElementwiseAddition_ThrowsOnMismatchedDimensions)
+TEST(TensorTests, ElementwiseAdditionThrowsOnMismatchedDimensions)
 {
-
+    EXPECT_THROW(m1 + m2, std::runtime_error);
 }
 
-TEST(TensorTests, ElementwiseAddition_ThrowsOnOrder1)
+TEST(TensorTests, ElementwiseSubtraction_Successful)
 {
+    auto actual = m1 - m1;
 
+    Tensor<int, 2> expected = {
+        { 0, 0 },
+        { 0, 0 },
+    };
+
+    EXPECT_EQ(expected, actual);
 }
 
-TEST(TensorTests, ElementwiseAddition_ThrowsOnOrder3)
+TEST(TensorTests, ElementwiseMultiplication_Successful)
 {
+    auto actual = m1 * m1;
 
+    Tensor<int, 2> expected = {
+        { 1, 4  },
+        { 9, 16 },
+    };
+
+    EXPECT_EQ(expected, actual);
 }
 
-TEST(TensorTests, ElementwiseSubtraction)
+TEST(TensorTests, ElementwiseDivision_Successful)
 {
+    auto actual = m1 / m1;
 
-}
+    Tensor<int, 2> expected = {
+        { 1, 1 },
+        { 1, 1 },
+    };
 
-TEST(TensorTests, ElementwiseMultiplication)
-{
-
-}
-
-TEST(TensorTests, ElementwiseDivision)
-{
-
+    EXPECT_EQ(expected, actual);
 }
 
 // ----- Tensor tests -----
@@ -88,7 +111,7 @@ TEST(TensorTest, ConstructionAndElementAccess)
     {
         for (size_t x = 0; x < shape[1]; ++x)
         {
-            EXPECT_EQ(t({y, x}), 5);
+            EXPECT_EQ(t(y, x), 5);
         }
     }
 }
@@ -100,25 +123,25 @@ TEST(TensorTest, ConstructionFromInitializerList)
     auto shape = t.Shape();
     EXPECT_EQ(shape[0], 2);
     EXPECT_EQ(shape[1], 2);
-    EXPECT_EQ(t({0, 0}), 1);
-    EXPECT_EQ(t({0, 1}), 2);
-    EXPECT_EQ(t({1, 0}), 3);
-    EXPECT_EQ(t({1, 1}), 4);
+    EXPECT_EQ(t(0, 0), 1);
+    EXPECT_EQ(t(0, 1), 2);
+    EXPECT_EQ(t(1, 0), 3);
+    EXPECT_EQ(t(1, 1), 4);
 }
 
 TEST(TensorTest, CopyAndMoveSemantics)
 {
     Tensor<int, 2> original({2, 2}, 7);
     Tensor<int, 2> copy = original; // Copy constructor
-    EXPECT_EQ(copy({0, 0}), 7);
+    EXPECT_EQ(copy(0, 0), 7);
 
     // Modify original and ensure copy remains unchanged.
-    original({0, 0}) = 10;
-    EXPECT_EQ(copy({0, 0}), 7);
+    original(0, 0) = 10;
+    EXPECT_EQ(copy(0, 0), 7);
 
     // Test move semantics.
     Tensor<int, 2> moved = std::move(original);
-    EXPECT_EQ(moved({0, 0}), 10);
+    EXPECT_EQ(moved(0, 0), 10);
     // After moving, original's size is 0.
     EXPECT_EQ(original.Size(), 0);
 }
@@ -127,16 +150,16 @@ TEST(TensorTest, DifferentNumericTypesAndInteractions)
 {
     // Test with int tensor.
     Tensor<int, 2> t_int({2, 2}, 3);
-    EXPECT_EQ(t_int({0, 0}), 3);
+    EXPECT_EQ(t_int(0, 0), 3);
 
     // Test with float tensor.
     Tensor<float, 2> t_float({2, 2}, 1.5f);
-    EXPECT_FLOAT_EQ(t_float({1, 1}), 1.5f);
+    EXPECT_FLOAT_EQ(t_float(1, 1), 1.5f);
 
     // Test interaction between different types via operator+.
     // The resulting tensor type should be the common type (float).
     auto result = t_int + t_float; // Uses operator+ from Arithmetic.hpp
-    EXPECT_FLOAT_EQ(result({0, 0}), 4.5f);
+    EXPECT_FLOAT_EQ(result(0, 0), 4.5f);
 }
 
 // ----- Arithmetic (Tensor operator overloads) tests -----
@@ -147,8 +170,8 @@ TEST(ArithmeticTest, TensorAddition)
     Tensor<int, 2> b({2, 2}, 2);
     auto c = a + b;
     // Each element should be 1+2=3.
-    EXPECT_EQ(c({0, 0}), 3);
-    EXPECT_EQ(c({1, 1}), 3);
+    EXPECT_EQ(c(0, 0), 3);
+    EXPECT_EQ(c(1, 1), 3);
 }
 
 // ----- Dispatcher tests -----
@@ -202,3 +225,5 @@ TEST(ThreadPoolTest, EnqueueAndExecute)
     }
     EXPECT_EQ(counter.load(), 100);
 }
+
+// clang-format on

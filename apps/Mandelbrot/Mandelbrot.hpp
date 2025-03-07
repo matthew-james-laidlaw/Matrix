@@ -41,11 +41,11 @@ auto GenerateMandelbrot(size_t height, size_t width) -> Tensor<float, 2>
 
             double mu = iteration - std::log(std::log(absz)) / std::log(2.0);
 
-            intensity({y, x}) = mu / static_cast<double>(maxIterations);
+            intensity(y, x) = mu / static_cast<double>(maxIterations);
         }
         else
         {
-            intensity({y, x}) = 0.0;
+            intensity(y, x) = 0.0;
         }
     });
 
@@ -61,16 +61,16 @@ auto GenerateMandelbrotImage(size_t height, size_t width, Colormap colormap) -> 
 
     Dispatch2d(height, width, [&](size_t y, size_t x)
     {
-        double t = intensity({y, x});
+        double t = intensity(y, x);
 
         t = std::pow(t, gamma);
         t = std::clamp(t, 0.0, 1.0);
 
         Color col = getColorFromColormap(colormap, t);
 
-        rgb({y, x, 0}) = static_cast<unsigned char>(std::clamp(col.r * 255.0, 0.0, 255.0));
-        rgb({y, x, 1}) = static_cast<unsigned char>(std::clamp(col.g * 255.0, 0.0, 255.0));
-        rgb({y, x, 2}) = static_cast<unsigned char>(std::clamp(col.b * 255.0, 0.0, 255.0));
+        rgb(y, x, 0) = static_cast<unsigned char>(std::clamp(col.r * 255.0, 0.0, 255.0));
+        rgb(y, x, 1) = static_cast<unsigned char>(std::clamp(col.g * 255.0, 0.0, 255.0));
+        rgb(y, x, 2) = static_cast<unsigned char>(std::clamp(col.b * 255.0, 0.0, 255.0));
     });
 
     return rgb;
